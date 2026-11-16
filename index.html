@@ -664,7 +664,10 @@ function maybeShowSummary(){
   const d = load(), tk = todayKey(), yk = keyOf(addDays(logicalNow(), -1));
   let seen = null;
   try { seen = localStorage.getItem(summaryKey()); } catch(e) {}
-  if (seen === yk) return;
+  if (seen === yk) {
+    if (!document.getElementById('modal').classList.contains('open')) maybeShowWeekSummary();
+    return;
+  }
   const first = Object.keys(d.days).sort()[0];
   if (!first || first >= tk) return;                     // empezó hoy: no hay "ayer" que resumir
   if (document.getElementById('modal').classList.contains('open')) { setTimeout(maybeShowSummary, 3000); return; }
@@ -684,7 +687,6 @@ function showSummary(d, yk, tk){
   const dmgUntil = k => weekDays(wk).filter(x => x <= k).reduce((s, x) => s + (d.days[x] ? dayDmg(d.days[x]) : 0), 0);
   const dmgY = d.days[yk] ? dayDmg(y) : 0, dmgAfter = dmgUntil(yk), dmgBefore = dmgAfter - dmgY;
   const bossKilledYesterday = dmgBefore < hp && dmgAfter >= hp;
-  const bathMissed = sunday && weeklyIds(y).filter(id => !weekDone(d, wk, id));
   const missing = ids.filter(id => !isDone(id, y)).map(id => H[id].name.toLowerCase());
 
   const r = total ? done / total : 0;
@@ -699,15 +701,14 @@ function showSummary(d, yk, tk){
   if (after.drops > before.drops) events.push(`<div class="ev bad">💔 Mimo se quedó sin energía y volvió a la etapa «${STAGES[after.stage]}».</div>`);
   else if (after.stage > before.stage) events.push(`<div class="ev good">✨ ¡Mimo ha evolucionado a «${STAGES[after.stage]}»!</div>`);
   if (bossKilledYesterday) events.push(`<div class="ev good">⚔️ ¡Derrotaste al Dragón de la Placa! +${XP_BOSS} XP</div>`);
-  if (bathMissed && bathMissed.length) events.push(`<div class="ev bad">🛁 La semana acabó sin fregar el baño: −${ENERGY_WEEKLY} de energía.</div>`);
   if (st >= 2 && r >= 1) events.push(`<div class="ev good">🔥 ¡Llevas ${st} días perfectos seguidos!</div>`);
 
   const eAfter = clamp(after.energy, 0, 100), eBefore = clamp(before.energy, 0, 100);
-  const eShown = after.drops > before.drops ? `${eBefore} → 0 → ${eAfter}` : `${eBefore} → ${eAfter}`;
+  const weeklyPenalty = sunday ? weeklyIds(y).filter(id => !weekDone(d, wk, id)).length * ENERGY_WEEKLY : 0;
+  const eDay = clamp(after.energy + weeklyPenalty, 0, 100);
+  const eShown = after.drops > before.drops ? `${eBefore} → 0 → ${eAfter}` : `${eBefore} → ${eDay}`;
   const sign = n => (n > 0 ? '+' : '') + n;
-  const bossLine = sunday
-    ? (dmgAfter >= hp ? 'Semana terminada: dragón derrotado ✓' : `Semana terminada: el dragón sobrevivió con ${hp - dmgAfter} HP`)
-    : (dmgAfter >= hp ? `${dmgY} de daño · ya está derrotado ✓` : `${dmgY} de daño · le quedan ${hp - dmgAfter} HP`);
+  const bossLine = dmgAfter >= hp ? `${dmgY} de daño · ya está derrotado ✓` : `${dmgY} de daño · le quedan ${hp - dmgAfter} HP`;
 
   openModal(`<div class="c">
       <div class="mut small">Resumen de ayer</div>
@@ -718,12 +719,76 @@ function showSummary(d, yk, tk){
     ${events.join('')}
     <div class="sumlist">
       <div><span>✅ Misiones</span><b>${done} de ${total} · +${dayXP(y)} XP</b></div>
-      <div><span>⚡ Energía</span><b>${eShown}${after.drops > before.drops ? '' : ' (' + sign(eAfter - eBefore) + ')'}</b></div>
+      <div><span>⚡ Energía</span><b>${eShown}${after.drops > before.drops ? '' : ' (' + sign(eDay - eBefore) + ')'}</b></div>
       <div><span>🔥 Racha</span><b>${st} ${st === 1 ? 'día' : 'días'}</b></div>
       <div><span>🐉 Dragón</span><b>${bossLine}</b></div>
     </div>
     ${missing.length ? `<p class="small missing">Lo que faltó: ${missing.join(', ')}</p>` : ''}
-    <div class="btns" style="margin-top:12px"><button class="sm pri" onclick="closeModal()">¡A por hoy!</button></div>`);
+    <div class="btns" style="margin-top:12px"><button class="sm pri" onclick="closeModal();setTimeout(maybeShowSummary,350)">${sunday ? 'Ver la semana' : '¡A por hoy!'}</button></div>`);
+}
+
+/* ---------- resumen de la semana anterior (los lunes) ---------- */
+function weekSummaryKey(){ return 'mimo-week-summary-' + (user ? user.id : 'local'); }
+function maybeShowWeekSummary(){
+  const d = load();
+  const lastWk = weekKeyOf(addDays(parseKey(weekKeyOf(logicalNow())), -1));
+  let seen = null;
+  try { seen = localStorage.getItem(weekSummaryKey()); } catch(e) {}
+  if (seen === lastWk) return false;
+  const days = weekDays(lastWk);
+  const first = Object.keys(d.days).sort()[0];
+  if (!first || first > days[6]) return false;           // no usaba Mimo la semana pasada
+  try { localStorage.setItem(weekSummaryKey(), lastWk); } catch(e) {}
+  showWeekSummary(d, lastWk, days);
+  return true;
+}
+function showWeekSummary(d, wk, days){
+  const today = todayKey();
+  const sun = days[6];
+  let perfect = 0, missions = 0, xp = 0;
+  for (const k of days) {
+    const r = d.days[k];
+    if (!r) continue;
+    if (complete(r)) perfect++;
+    missions += doneDaily(r);
+    xp += dayXP(r);
+  }
+  const prevXP = weekXP(d, weekKeyOf(addDays(parseKey(wk), -1)));
+  const hp = bossHP(d), dmg = weekDmg(d, wk), killed = dmg >= hp;
+  if (killed) xp += XP_BOSS;
+  const lastRec = rec(d, sun);
+  const weekly = weeklyIds(lastRec).map(id => ({ id, done: weekDone(d, wk, id) }));
+  const before = simulate(d, sun, false), after = simulate(d, keyOf(addDays(parseKey(sun), 1)), false);
+  const stageUp = after.stage > before.stage;
+
+  let mood, title, msg;
+  if (perfect >= 6)      { mood = 'happy';  title = '¡Semana espectacular!'; msg = `${perfect} días perfectos. Mimo está orgulloso de ti.`; }
+  else if (perfect >= 3) { mood = 'happy';  title = '¡Buena semana!';        msg = 'Vas por buen camino. Esta semana, a por más días perfectos.'; }
+  else if (missions > 0) { mood = 'normal'; title = 'Semana irregular';      msg = 'Hubo días buenos y otros no tanto. Esta semana empieza de cero.'; }
+  else                   { mood = 'sad';    title = 'Semana perdida';        msg = 'Mimo te ha echado de menos. ¡Esta semana es una nueva oportunidad!'; }
+
+  const fmtD = k => { const x = parseKey(k); return x.getDate() + '/' + (x.getMonth() + 1); };
+  const diff = prevXP > 0 ? Math.round((xp - prevXP) / prevXP * 100) : null;
+  const rows = [
+    `<div><span>🌟 Días perfectos</span><b>${perfect} de 7</b></div>`,
+    `<div><span>✅ Misiones diarias</span><b>${missions}</b></div>`,
+    `<div><span>⭐ XP de la semana</span><b>${xp}${diff === null ? '' : ` (${diff >= 0 ? '+' : ''}${diff} % vs. anterior)`}</b></div>`,
+    `<div><span>🐉 Dragón</span><b>${killed ? 'Derrotado ✓ +' + XP_BOSS + ' XP' : 'Sobrevivió con ' + (hp - dmg) + ' HP'}</b></div>`
+  ].concat(weekly.map(w => `<div><span>${H[w.id].icon} ${H[w.id].full}</span><b>${w.done ? 'Hecho ✓ +' + H[w.id].xp + ' XP' : 'Sin hacer · −' + ENERGY_WEEKLY + ' energía'}</b></div>`));
+  const events = [];
+  if (stageUp) events.push(`<div class="ev good">✨ ¡Mimo ha evolucionado a «${STAGES[after.stage]}»!</div>`);
+  if (weekly.some(w => !w.done)) events.push(`<div class="ev bad">La misión semanal quedó sin hacer y Mimo perdió ${ENERGY_WEEKLY} de energía.</div>`);
+
+  openModal(`<div class="c">
+      <div class="mut small">Resumen de la semana · ${fmtD(days[0])} – ${fmtD(sun)}</div>
+      <div class="pet ask-pet ${mood === 'sad' ? 'sad' : ''}">${mimoSVG(after.stage, mood)}</div>
+      <h3>${title}</h3>
+      <p class="mut small">${msg}</p>
+    </div>
+    ${events.join('')}
+    <div class="sumlist">${rows.join('')}</div>
+    <p class="small mut c" style="margin:10px 0 0">Nueva semana: el dragón vuelve con toda su vida.</p>
+    <div class="btns" style="margin-top:12px"><button class="sm pri" onclick="closeModal()">¡A por esta semana!</button></div>`);
 }
 
 /* ---------- notificaciones push ---------- */
