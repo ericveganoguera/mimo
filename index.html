@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Mimo</title>
 <meta name="description" content="Cuida a Mimo cepillándote los dientes y bebiendo agua.">
 <meta name="theme-color" content="#15112e">
@@ -211,9 +211,11 @@ button.auth:disabled{opacity:.6}
 .tile:active{transform:scale(.97)}
 .quest.wait{border-color:#2f4f7a}
 /* Ventanas */
-#modal{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;justify-content:center;padding:16px 16px calc(16px + env(safe-area-inset-bottom));z-index:15}
+#modal{position:fixed;left:0;right:0;top:var(--vv-top,0px);height:var(--vv-h,100%);background:#000a;display:none;align-items:flex-end;justify-content:center;padding:16px 16px calc(16px + env(safe-area-inset-bottom));z-index:15}
+#modal.kb{align-items:center;padding:10px 12px}
 #modal.open{display:flex}
-.sheet{background:var(--card);border-radius:20px;padding:18px;width:100%;max-width:420px;max-height:85vh;overflow-y:auto;animation:pop .2s ease-out}
+.sheet{background:var(--card);border-radius:20px;padding:18px;width:100%;max-width:420px;max-height:calc(var(--vv-h,100vh) - 32px);overflow-y:auto;overscroll-behavior:contain;animation:pop .2s ease-out}
+#modal.kb .sheet{max-height:calc(var(--vv-h,100vh) - 20px)}
 .sheet h3{margin:0 0 6px;font-size:18px}
 .sheet p{margin:0 0 12px}
 .field{width:100%;background:#130f26;color:var(--txt);border:1px solid #3a3370;border-radius:12px;padding:12px;font:inherit;font-size:20px;margin-bottom:12px}
@@ -640,6 +642,22 @@ function openModal(html){
   m.classList.add('open');
 }
 function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+/* Cuando sale el teclado, la ventana se ajusta al hueco que queda visible */
+function fitViewport(){
+  const vv = window.visualViewport, root = document.documentElement, m = document.getElementById('modal');
+  if (!vv || !m) return;
+  root.style.setProperty('--vv-h', vv.height + 'px');
+  root.style.setProperty('--vv-top', vv.offsetTop + 'px');
+  m.classList.toggle('kb', window.innerHeight - vv.height > 120);
+}
+if (window.visualViewport) {
+  visualViewport.addEventListener('resize', fitViewport);
+  visualViewport.addEventListener('scroll', fitViewport);
+}
+document.addEventListener('focusin', e => {
+  if (!e.target.closest || !e.target.closest('#modal')) return;
+  setTimeout(() => { fitViewport(); e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 300);
+});
 function openSteps(){
   const d = load(), t = rec(d, todayKey()), goal = stepGoalOf(d, t);
   openModal(`<h3>👟 Pasos de hoy</h3>
