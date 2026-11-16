@@ -81,3 +81,20 @@ Con ella: crea un *Services ID* y una *key* de Sign in with Apple, actívalo en
 | `groups`, `group_members` | grupos de amigos para el ranking | los miembros del grupo |
 
 Borrar la cuenta (`delete_my_account()`) elimina todos sus datos en cascada.
+
+## Notificaciones push
+
+Avisan 1 hora antes de que acabe el plazo de una misión con horario y, a la hora que
+elija cada jugador (22:00 por defecto), recuerdan lo que falta. Nunca entre las 0:00 y las 7:00.
+
+1. **SQL Editor**: ejecuta [`migrations/004_notificaciones.sql`](migrations/004_notificaciones.sql).
+2. **Edge Functions → Deploy a new function → Via Editor**: nombre `notify`,
+   pega el contenido de [`functions/notify/index.ts`](functions/notify/index.ts) y pulsa **Deploy**.
+3. **Edge Functions → Secrets**: añade `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` y `CRON_SECRET`.
+   La clave pública VAPID es la de `config.js`; la privada y el secreto **nunca** van al repositorio.
+4. **SQL Editor**: ejecuta [`functions/notify/cron.sql`](functions/notify/cron.sql) sustituyendo
+   `<ANON_KEY>` y `<CRON_SECRET>`. Programa la función cada 15 minutos.
+5. En la app: **Perfil → Mis hábitos y objetivos → Recibir avisos en este móvil**.
+
+Para comprobarlo, en **Edge Functions → notify → Logs** verás cada ejecución
+con cuántos avisos ha enviado (`sent`).

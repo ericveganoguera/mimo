@@ -8,13 +8,14 @@ App de hábitos gamificada: cuida a **Mimo**, tu criatura, cepillándote los die
   - Cepillado de dientes 3 veces, con franja horaria (6–12 h, 14–17 h, 20–3 h).
   - Agua: 2 L, un vaso de 250 ml cada 30 minutos como máximo.
   - Pasos: objetivo diario configurable; se apunta la cifra de la app de salud.
-  - Leer 20 minutos: se empieza y se confirma pasados 20 minutos.
-  - Hacer la cama (antes de las 14 h) y ordenar cocina y comedor.
+  - Leer 20 minutos: se marca con un toque.
+  - Hacer la cama y ordenar cocina y comedor (a cualquier hora).
   - Fregar el baño, una vez por semana.
 - **Sin días pasados:** el día termina a las 3:00 y lo que no se marca a tiempo se pierde.
 - **Mimo evoluciona** con la XP: Huevo → Bebé Mimo → Mimo pequeño → Mimo → Mimo alado → Mimo real.
 - **Energía:** al acabar el día se pierde energía según la parte de misiones que falte (hasta 40); un día perfecto devuelve 10; una misión semanal sin hacer quita 15. Si llega a 0, Mimo baja una etapa.
 - **Jefe semanal:** el Dragón de la Placa pierde vida con cada misión; su vida depende de los hábitos activos.
+- **Notificaciones:** 1 hora antes de que acabe un plazo y un recordatorio diario de lo pendiente (hora configurable); se envían desde Supabase (función `notify`).
 - **Ranking con amigos:** grupos con código de 6 caracteres o enlace de invitación; clasificación por XP de la semana.
 
 ## Instalar en Android

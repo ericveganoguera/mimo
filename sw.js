@@ -1,6 +1,6 @@
 // Service worker de Mimo: permite instalar la app y abrirla sin conexión.
 // Estrategia: primero red (para recibir actualizaciones), y si no hay conexión, caché.
-const CACHE = 'mimo-v6';
+const CACHE = 'mimo-v7';
 const ASSETS = [
   './',
   './index.html',
@@ -36,4 +36,25 @@ self.addEventListener('fetch', e => {
       })
       .catch(() => caches.match(e.request).then(r => r || caches.match('./index.html')))
   );
+});
+
+// Notificaciones push enviadas por la función "notify" de Supabase
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (err) { d = { body: e.data && e.data.text() }; }
+  e.waitUntil(self.registration.showNotification(d.title || 'Mimo', {
+    body: d.body || '',
+    icon: './icons/icon-192.png',
+    tag: d.tag || 'mimo',
+    data: { url: './' }
+  }));
+});
+
+// Al tocar la notificación se abre (o se trae al frente) Mimo
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+    for (const c of list) if ('focus' in c) return c.focus();
+    return self.clients.openWindow((e.notification.data && e.notification.data.url) || './');
+  }));
 });
