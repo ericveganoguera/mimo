@@ -18,13 +18,17 @@ create table public.profiles (
                 check (char_length(display_name) between 1 and 16),
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now(),
-  last_seen_at  timestamptz
+  last_seen_at  timestamptz,
+  settings      jsonb not null default '{}'::jsonb
+                constraint profiles_settings_check
+                check (jsonb_typeof(settings) = 'object' and pg_column_size(settings) < 4000)
 );
 
 -- ---------------------------------------------------------------------
 -- Historial: un registro por usuario y día (el día va de 3:00 a 3:00)
 --   am / md / pm : cepillados de mañana, mediodía y noche
 --   glasses      : array con la hora (ms) de cada vaso de agua
+--   extra        : resto de hábitos del día (pasos, lectura, cama, cocina, baño…)
 -- ---------------------------------------------------------------------
 create table public.day_logs (
   user_id     uuid not null references auth.users(id) on delete cascade,
@@ -34,6 +38,9 @@ create table public.day_logs (
   pm          boolean not null default false,
   glasses     jsonb   not null default '[]'::jsonb
               check (jsonb_typeof(glasses) = 'array' and jsonb_array_length(glasses) <= 16),
+  extra       jsonb   not null default '{}'::jsonb
+              constraint day_logs_extra_check
+              check (jsonb_typeof(extra) = 'object' and pg_column_size(extra) < 4000),
   updated_at  timestamptz not null default now(),
   primary key (user_id, day)
 );

@@ -15,7 +15,11 @@ Mientras `config.js` esté vacío, la app funciona solo en el dispositivo, sin c
 
 1. En el menú lateral, **SQL Editor** → **New query**.
 2. Pega el contenido entero de [`schema.sql`](schema.sql) y pulsa **Run**.
-3. Debe terminar sin errores. Crea las tablas, las reglas de seguridad (RLS) y las funciones.
+3. Haz lo mismo, en orden, con cada archivo de [`migrations/`](migrations/) (`002_…`, `003_…`).
+   Todos se pueden ejecutar más de una vez sin problema.
+4. Debe terminar sin errores. Crea las tablas, las reglas de seguridad (RLS) y las funciones.
+
+Cada vez que se añada una migración nueva, basta con ejecutar ese archivo.
 
 ## 3. Desactivar el registro con email y contraseña
 
@@ -70,8 +74,8 @@ Con ella: crea un *Services ID* y una *key* de Sign in with Apple, actívalo en
 | Tabla | Contenido | Quién lo ve |
 |---|---|---|
 | `auth.users` (Supabase) | email, proveedor, fecha de alta, último acceso | solo el propio usuario |
-| `profiles` | nombre de jugador, último uso | tú y tus compañeros de grupo |
-| `day_logs` | historial diario: cepillados y vasos de agua con su hora | solo tú |
+| `profiles` | nombre y apellidos de Google (no editable), ajustes de hábitos, último uso | tú y tus compañeros de grupo (solo el nombre) |
+| `day_logs` | historial diario de todos los hábitos (cepillados, vasos con su hora, pasos, lectura, cama, cocina, baño) | solo tú |
 | `boss_wins` | jefes semanales derrotados | solo tú |
 | `progress` | XP, nivel, etapa de Mimo, energía, rachas, XP de la semana | tú y tus compañeros de grupo |
 | `groups`, `group_members` | grupos de amigos para el ranking | los miembros del grupo |

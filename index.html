@@ -48,8 +48,8 @@ h2:first-child{margin-top:4px}
 /* Pantalla de Mimo: ocupa todo el alto disponible sin scroll */
 #main.fill{display:flex;flex-direction:column;gap:12px}
 #main.fill>*{margin:0;flex:none}
-#main.fill .stage{flex:1 1 auto;min-height:190px;height:auto}
-#main.fill .stage .pet svg{width:min(62vw,30vh,320px);height:min(62vw,30vh,320px)}
+#main.fill .stage{flex:1 1 auto;min-height:120px;height:auto}
+#main.fill .stage .pet svg{width:min(62vw,24vh,320px);height:min(62vw,24vh,320px)}
 #main.fill .mood{margin:0;min-height:0}
 #main.fill .card{padding:18px}
 #main.fill button.big{padding:18px 4px;font-size:15px}
@@ -58,9 +58,9 @@ h2:first-child{margin-top:4px}
 #main.fill button.sm{padding:14px}
 #main.fill>.grow{flex:1 1 auto}
 #main.fill h2{margin:4px 2px -4px}
-.qlist{display:flex;flex-direction:column;gap:10px;min-height:340px}
-.qlist .quest{flex:1 1 0;margin:0;min-height:62px}
-.stage .boss-art{font-size:min(26vh,44vw);margin:0;line-height:1}
+.qlist{display:flex;flex-direction:column;gap:8px;min-height:0}
+.qlist .quest{flex:1 1 0;margin:0;min-height:48px;padding:6px 12px}
+.stage .boss-art{font-size:min(20vh,44vw);margin:0;line-height:1}
 .chart{display:flex;flex-direction:column;min-height:200px}
 .chart .cols{flex:1;height:auto}
 .tri{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -121,7 +121,7 @@ button.sm.wait{background:#2b3a55;color:var(--mut);font-weight:400}
 .stat{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #332d5c;font-size:14px}
 .stat:last-child{border:0}
 .prof{display:flex;align-items:center;gap:14px}
-.prof input{background:#130f26;color:var(--txt);border:1px solid #3a3370;border-radius:10px;padding:8px 10px;font:inherit;font-size:16px;width:100%}
+.pname{font-size:18px;font-weight:700;line-height:1.25;word-break:break-word}
 button.danger{width:100%;background:transparent;color:var(--red);border:2px solid var(--red);border-radius:14px;padding:12px;font:inherit;cursor:pointer}
 .toast{background:var(--gold);color:#2a2100;border-radius:14px;padding:10px 14px;font-size:14px;font-weight:600;text-align:center;margin-bottom:12px;animation:pop .3s ease-out}
 .toast.warn{background:#3a3370;color:var(--txt)}
@@ -148,6 +148,75 @@ button.auth:disabled{opacity:.6}
 .btns2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .btns2 button{width:100%;padding:12px;border-radius:14px;font:inherit;cursor:pointer}
 .btn-out{background:#3a3370;color:var(--txt);border:0}
+.statgrid{grid-auto-rows:1fr;align-content:stretch}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:#1b1640;border-radius:14px;padding:4px;gap:4px}
+.seg button{border:0;background:none;color:var(--mut);font:inherit;font-size:14px;padding:9px;border-radius:10px;cursor:pointer}
+.seg button.on{background:#3a3370;color:var(--txt);font-weight:600}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.chips button{flex:none;border:1px solid #3a3370;background:none;color:var(--mut);font:inherit;font-size:13px;padding:7px 12px;border-radius:99px;cursor:pointer}
+.chips button.on{background:#3a3370;color:var(--txt)}
+.gh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px}
+.gh b{display:block;font-size:16px}
+.codebtn{border:0;background:var(--gold);color:#2a2100;font:inherit;font-weight:700;letter-spacing:1.5px;padding:9px 12px;border-radius:12px;cursor:pointer;flex:none}
+.rlist{overflow-y:auto;padding:6px 10px;min-height:160px}
+.rrow{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid #332d5c}
+.rrow:last-child{border:0}
+.rrow.me{background:#3a337066;border-radius:12px;border-bottom-color:transparent}
+.pos{width:26px;text-align:center;font-weight:700;color:var(--mut);font-size:16px;flex:none}
+.rpet svg{width:40px;height:40px;display:block}
+.rname{flex:1;min-width:0}
+.rname b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rname i{font-style:normal;color:var(--mut);font-weight:400}
+.rname small{display:block;font-size:11px;color:var(--mut)}
+.rxp{font-weight:700;font-size:17px;color:var(--gold);text-align:right;flex:none}
+.rxp small{display:block;font-size:10px;color:var(--mut);font-weight:400}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.btns3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.btns3 button{padding:12px 6px;border-radius:14px;font:inherit;font-size:14px;cursor:pointer}
+.btns3 .leave{background:transparent;color:var(--red);border:1px solid #5a2f46}
+.field.code{text-align:center;letter-spacing:6px;font-weight:700;text-transform:uppercase}
+.statgrid .mini{display:flex;flex-direction:column;justify-content:center;padding:8px 4px}
+.statgrid .mini b{font-size:20px}
+#main.fill .prof{padding:12px 16px}
+#main.fill .badges{padding:10px 12px;display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px}
+#main.fill .badges span{flex:none;margin:0}
+#main.fill .acct{padding:12px 16px}
+.qlist .quest.open{border-color:#5a4fa0}
+/* Cuadrícula de misiones en la pantalla de Mimo */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grid.g2{grid-template-columns:repeat(2,1fr)}
+.tile{background:#2f2956;border:2px solid transparent;border-radius:16px;padding:9px 4px;color:var(--txt);font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;min-height:74px}
+.tile .ti{font-size:26px;line-height:1.15}
+.tile b{font-size:13px}
+.tile small{font-size:11px;color:var(--mut);white-space:nowrap}
+.tile.done{border-color:var(--acc)}
+.tile.done small{color:var(--acc)}
+.tile.open small{color:var(--gold)}
+.tile.wait small{color:var(--blue)}
+.tile.soon,.tile.lost{opacity:.5}
+.tile.lost small{color:var(--red)}
+.tile:active{transform:scale(.97)}
+.quest.wait{border-color:#2f4f7a}
+/* Ventanas */
+#modal{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;justify-content:center;padding:16px 16px calc(16px + env(safe-area-inset-bottom));z-index:15}
+#modal.open{display:flex}
+.sheet{background:var(--card);border-radius:20px;padding:18px;width:100%;max-width:420px;max-height:85vh;overflow-y:auto;animation:pop .2s ease-out}
+.sheet h3{margin:0 0 6px;font-size:18px}
+.sheet p{margin:0 0 12px}
+.field{width:100%;background:#130f26;color:var(--txt);border:1px solid #3a3370;border-radius:12px;padding:12px;font:inherit;font-size:20px;margin-bottom:12px}
+.sm-field{width:110px;font-size:16px;padding:8px 10px;margin:0;text-align:right}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 2px;border-bottom:1px solid #332d5c;font-size:14px}
+.opt input[type=checkbox]{width:22px;height:22px;accent-color:var(--acc);flex:none}
+.hrow{display:flex;justify-content:space-between;align-items:center}
+button.link{background:none;border:0;color:var(--blue);font:inherit;font-size:13px;cursor:pointer;padding:4px}
+.mini-btns{display:flex;gap:6px}
+.mini-btns button{width:34px;height:34px;border-radius:10px;border:0;background:#3a3370;color:var(--txt);font-size:18px;cursor:pointer}
+.mini-btns button:last-child{background:var(--blue);color:#0c1b33}
+.sep{font-size:12px;color:var(--mut);margin:2px 4px -4px;text-transform:uppercase;letter-spacing:.6px}
+.perfect{font-size:13px;color:var(--mut);padding:12px 16px}
+.perfect b{color:var(--gold)}
+.perfect.ok{border:2px solid var(--acc)}
+button.setbtn{display:flex;justify-content:space-between;align-items:center;width:100%;border:0;color:var(--txt);font:inherit;font-size:14px;cursor:pointer;padding:14px 16px;text-align:left}
 </style>
 </head>
 <body>
@@ -155,25 +224,50 @@ button.auth:disabled{opacity:.6}
 <div id="main"></div>
 <nav id="nav"></nav>
 <div id="login" hidden></div>
+<div id="modal" onclick="closeModal()"></div>
 
 <script src="config.js"></script>
 <script src="vendor/supabase.js"></script>
 <script>
 /* ---------- configuración ---------- */
-const WATER_GOAL = 2000, GLASS = 250, MAX_GLASSES = 16;
-const COOLDOWN_MIN = 30;
-const XP_Q = 10, XP_GLASS = 5, XP_DAY = 20, XP_BOSS = 50;
-const DMG_Q = 10, DMG_GLASS = 5, BOSS_HP = 350;
-const STAGE_XP = 150;                  // XP de Mimo para evolucionar
-const ENERGY_DOWN = 10, ENERGY_UP = 10; // por misión fallada / por día perfecto
-const DAY_START = 3;                   // el día termina a las 3:00
-const BRUSH = [
-  {id:'am', icon:'🪥', name:'Mañana',   full:'Cepillado de la mañana',   from:6,  to:12},
-  {id:'md', icon:'☀️', name:'Mediodía', full:'Cepillado del mediodía',   from:14, to:17},
-  {id:'pm', icon:'🌙', name:'Noche',    full:'Cepillado de la noche',    from:20, to:27}
+const WATER_GOAL = 2000, GLASS = 250, MAX_GLASSES = 16, GLASSES_GOAL = WATER_GOAL / GLASS;
+const COOLDOWN_MIN = 30;                 // minutos entre vasos de agua
+const READ_MIN = 20;                     // minutos de lectura
+const XP_GLASS = 5, DMG_GLASS = 5;       // por vaso
+const XP_PERFECT = 20, XP_BOSS = 50;
+const STAGE_XP = 150;                    // XP de Mimo para evolucionar
+const ENERGY_DAY_MAX = 40;               // energía que quita un día sin hacer nada
+const ENERGY_UP = 10;                    // energía que devuelve un día perfecto
+const ENERGY_WEEKLY = 15;                // energía que quita una misión semanal sin hacer
+const DAY_START = 3;                     // el día termina a las 3:00
+
+/* Catálogo de hábitos.
+   kind: brush/check (marcar, con franja opcional), water, steps, read, weekly */
+const HABITS = [
+  {id:'am',      kind:'brush',  icon:'🪥', name:'Mañana',   full:'Cepillado de la mañana',   from:6,  to:12, xp:10, dmg:10},
+  {id:'md',      kind:'brush',  icon:'☀️', name:'Mediodía', full:'Cepillado del mediodía',   from:14, to:17, xp:10, dmg:10},
+  {id:'pm',      kind:'brush',  icon:'🌙', name:'Noche',    full:'Cepillado de la noche',    from:20, to:27, xp:10, dmg:10},
+  {id:'water',   kind:'water',  icon:'💧', name:'Agua',     full:'Beber 2 L de agua'},
+  {id:'steps',   kind:'steps',  icon:'👟', name:'Pasos',    full:'Caminar',                  xp:20, dmg:20},
+  {id:'read',    kind:'read',   icon:'📖', name:'Leer',     full:'Leer 20 minutos',          xp:20, dmg:20},
+  {id:'bed',     kind:'check',  icon:'🛏️', name:'Cama',     full:'Hacer la cama',            from:5,  to:14, xp:10, dmg:10},
+  {id:'kitchen', kind:'check',  icon:'🍽️', name:'Cocina',   full:'Ordenar cocina y comedor', xp:10, dmg:10},
+  {id:'bath',    kind:'weekly', icon:'🛁', name:'Baño',     full:'Fregar el baño',           xp:30, dmg:30}
 ];
-const GLASSES_GOAL = WATER_GOAL / GLASS;
-const DAY_DMG_MAX = BRUSH.length*DMG_Q + GLASSES_GOAL*DMG_GLASS;
+const H = Object.fromEntries(HABITS.map(h => [h.id, h]));
+const GROUPS = [
+  {key:'brush',   icon:'🪥', name:'Cepillarme los dientes (3 veces)'},
+  {key:'water',   icon:'💧', name:'Beber 2 L de agua'},
+  {key:'steps',   icon:'👟', name:'Caminar (objetivo de pasos)'},
+  {key:'read',    icon:'📖', name:'Leer 20 minutos'},
+  {key:'bed',     icon:'🛏️', name:'Hacer la cama'},
+  {key:'kitchen', icon:'🍽️', name:'Ordenar cocina y comedor'},
+  {key:'bath',    icon:'🛁', name:'Fregar el baño (semanal)'}
+];
+const LEGACY_H = ['am','md','pm','water'];   // días guardados antes de los nuevos hábitos
+const DEFAULT_SETTINGS = { on:{brush:true, water:true, steps:true, read:true, bed:true, kitchen:true, bath:true}, stepGoal:8000 };
+const PERFECT_MSG = '🌟 ¡Día perfecto! Mimo brilla de felicidad.';
+
 const STAGES = ['Huevo','Bebé Mimo','Mimo pequeño','Mimo','Mimo alado','Mimo real'];
 const PETS = STAGES;
 
@@ -213,7 +307,7 @@ const STORE = 'cuidadores-v3';
 const TABS = [
   {id:'missions', icon:'📜', label:'Misiones'},
   {id:'boss',     icon:'🐉', label:'Jefe'},
-  {id:'char',     icon:'', label:'Mimo', center:true},
+  {id:'char',     icon:'',   label:'Mimo', center:true},
   {id:'rank',     icon:'🏆', label:'Ranking'},
   {id:'profile',  icon:'👤', label:'Perfil'}
 ];
@@ -229,6 +323,9 @@ function todayKey(){ return keyOf(logicalNow()); }
 function weekKeyOf(dt){ return keyOf(addDays(dt,-((dt.getDay()+6)%7))); }
 function nowHour(){ const n=new Date(); let h=n.getHours()+n.getMinutes()/60; if (h < DAY_START) h += 24; return h; }
 function fmtH(h){ return pad(h%24)+':00'; }
+function fmtNum(n){ return Number(n || 0).toLocaleString('es-ES'); }
+function fmtK(n){ n = n || 0; return n >= 1000 ? (Math.round(n/100)/10).toString().replace('.', ',') + 'k' : String(n); }
+function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
 
 /* ---------- almacenamiento ---------- */
 function load(){
@@ -240,22 +337,79 @@ function save(d){
   try { localStorage.setItem(STORE, JSON.stringify(d)); } catch(e) {}
 }
 
-/* ---------- reglas ---------- */
-function rec(d,k){ return d.days[k] || {am:false,md:false,pm:false,glasses:[]}; }
-function today(d){ return d.days[todayKey()] || (d.days[todayKey()] = {am:false,md:false,pm:false,glasses:[]}); }
+/* ---------- ajustes y hábitos activos ---------- */
+function settingsOf(d){
+  const s = d.settings || {};
+  return { on: Object.assign({}, DEFAULT_SETTINGS.on, s.on || {}), stepGoal: s.stepGoal || DEFAULT_SETTINGS.stepGoal };
+}
+function groupOf(h){ return h.kind === 'brush' ? 'brush' : h.id; }
+function activeIds(s){ return HABITS.filter(h => s.on[groupOf(h)] !== false).map(h => h.id); }
+
+/* ---------- registros del día ---------- */
+function newRec(d){ const s = settingsOf(d); return { glasses:[], h:activeIds(s), sg:s.stepGoal }; }
+function rec(d,k){ return d.days[k] || newRec(d); }
+function today(d){
+  const k = todayKey();
+  if (!d.days[k]) d.days[k] = newRec(d);
+  ensureToday(d);
+  return d.days[k];
+}
+/* Un día de hoy guardado antes de los nuevos hábitos se pasa a los hábitos activos */
+function ensureToday(d){
+  const t = d.days[todayKey()];
+  if (t && !t.h) { const s = settingsOf(d); t.h = activeIds(s); t.sg = t.sg || s.stepGoal; t.u = Date.now(); return true; }
+  return false;
+}
+function hList(r){ return r.h || LEGACY_H; }
+function dailyIds(r){ return hList(r).filter(id => H[id] && H[id].kind !== 'weekly'); }
+function weeklyIds(r){ return hList(r).filter(id => H[id] && H[id].kind === 'weekly'); }
 function glassCount(r){ return (r.glasses || []).length; }
 function waterMl(r){ return glassCount(r) * GLASS; }
-function waterOk(r){ return waterMl(r) >= WATER_GOAL; }
-function brushDone(r){ return BRUSH.filter(m => r[m.id]).length; }
-function complete(r){ return brushDone(r) === BRUSH.length && waterOk(r); }
-function missing(r){ return (BRUSH.length - brushDone(r)) + (waterOk(r) ? 0 : 1); }
-function dayXP(r){ return brushDone(r)*XP_Q + Math.min(glassCount(r), GLASSES_GOAL)*XP_GLASS + (complete(r)?XP_DAY:0); }
-function dayDmg(r){ return brushDone(r)*DMG_Q + Math.min(glassCount(r), GLASSES_GOAL)*DMG_GLASS; }
-function mState(m, r){
-  if (r[m.id]) return 'done';
-  const h = nowHour();
-  if (h < m.from) return 'soon';
-  if (h >= m.to) return 'lost';
+function stepGoalOf(d, r){ return r.sg || settingsOf(d).stepGoal; }
+function isDone(id, r){
+  const h = H[id];
+  switch (h.kind) {
+    case 'water': return glassCount(r) >= GLASSES_GOAL;
+    case 'steps': return (r.steps || 0) >= (r.sg || DEFAULT_SETTINGS.stepGoal);
+    default:      return !!r[id];
+  }
+}
+function doneDaily(r){ return dailyIds(r).filter(id => isDone(id, r)).length; }
+function complete(r){ const n = dailyIds(r).length; return n > 0 && doneDaily(r) === n; }
+function missingDaily(r){ return dailyIds(r).length - doneDaily(r); }
+function habitPoints(id, r, field){
+  if (H[id].kind === 'water') return Math.min(glassCount(r), GLASSES_GOAL) * (field === 'xp' ? XP_GLASS : DMG_GLASS);
+  return isDone(id, r) ? H[id][field] : 0;
+}
+function dayXP(r){
+  let x = dailyIds(r).reduce((s, id) => s + habitPoints(id, r, 'xp'), 0);
+  if (complete(r)) x += XP_PERFECT;
+  for (const id of weeklyIds(r)) if (r[id]) x += H[id].xp;
+  return x;
+}
+function dayDmg(r){
+  let x = dailyIds(r).reduce((s, id) => s + habitPoints(id, r, 'dmg'), 0);
+  for (const id of weeklyIds(r)) if (r[id]) x += H[id].dmg;
+  return x;
+}
+function habitMaxDmg(id){ return H[id].kind === 'water' ? GLASSES_GOAL * DMG_GLASS : H[id].dmg; }
+function dailyMaxDmg(d){ return activeIds(settingsOf(d)).filter(id => H[id].kind !== 'weekly').reduce((s, id) => s + habitMaxDmg(id), 0); }
+function bossHP(d){
+  const ids = activeIds(settingsOf(d));
+  const weekly = ids.filter(id => H[id].kind === 'weekly').reduce((s, id) => s + H[id].dmg, 0);
+  return Math.max(100, Math.round(0.6 * (7 * dailyMaxDmg(d) + weekly) / 10) * 10);
+}
+function weekDone(d, wk, id){
+  const mon = parseKey(wk);
+  for (let i = 0; i < 7; i++) { const r = d.days[keyOf(addDays(mon, i))]; if (r && r[id]) return true; }
+  return false;
+}
+function mState(h, r){
+  if (r[h.id]) return 'done';
+  if (h.from === undefined) return 'open';
+  const t = nowHour();
+  if (t < h.from) return 'soon';
+  if (t >= h.to) return 'lost';
   return 'open';
 }
 function cooldownLeft(r){
@@ -273,19 +427,20 @@ function streak(d){
   let dt = logicalNow();
   if (!complete(rec(d, keyOf(dt)))) dt = addDays(dt,-1);
   let n = 0;
-  while (complete(rec(d, keyOf(dt)))) { n++; dt = addDays(dt,-1); }
+  while (d.days[keyOf(dt)] && complete(d.days[keyOf(dt)])) { n++; dt = addDays(dt,-1); }
   return n;
 }
-function weekDmg(d, wk){ let s=0; for (const k in d.days) if (weekKeyOf(parseKey(k))===wk) s += dayDmg(d.days[k]); return s; }
-function weekXP(d, wk){ let s=0; for (const k in d.days) if (weekKeyOf(parseKey(k))===wk) s += dayXP(d.days[k]); return s; }
+function weekDays(wk){ const mon = parseKey(wk); return Array.from({length:7}, (_, i) => keyOf(addDays(mon, i))); }
+function weekDmg(d, wk){ return weekDays(wk).reduce((s, k) => s + (d.days[k] ? dayDmg(d.days[k]) : 0), 0); }
+function weekXP(d, wk){ return weekDays(wk).reduce((s, k) => s + (d.days[k] ? dayXP(d.days[k]) : 0), 0); }
 function checkBoss(d){
   const wk = weekKeyOf(logicalNow());
-  if (!d.bossDefeated[wk] && weekDmg(d, wk) >= BOSS_HP) { d.bossDefeated[wk] = true; return true; }
+  if (!d.bossDefeated[wk] && weekDmg(d, wk) >= bossHP(d)) { d.bossDefeated[wk] = true; return true; }
   return false;
 }
 
-/* Recorre los días desde el primero: Mimo evoluciona con XP
-   y pierde energía por cada misión no hecha. Si llega a 0, baja de etapa. */
+/* Recorre los días desde el primero: Mimo evoluciona con XP y pierde energía
+   según la parte de misiones que falte cada día. Si llega a 0, baja de etapa. */
 function simulate(d){
   const keys = Object.keys(d.days).sort();
   const tk = todayKey();
@@ -294,12 +449,16 @@ function simulate(d){
   let dt = parseKey(keys[0]);
   while (keyOf(dt) <= tk){
     const k = keyOf(dt), r = rec(d, k);
-    prog += dayXP(r);
+    prog += d.days[k] ? dayXP(r) : 0;
     while (prog >= STAGE_XP && stage < PETS.length-1){ stage++; prog -= STAGE_XP; }
     if (stage === PETS.length-1) prog = Math.min(prog, STAGE_XP);
     if (k < tk){
-      const miss = missing(r);
-      energy = Math.min(100, energy + (miss === 0 ? ENERGY_UP : 0) - miss*ENERGY_DOWN);
+      const total = dailyIds(r).length, miss = missingDaily(r);
+      energy += (total > 0 && miss === 0 ? ENERGY_UP : 0) - (total ? Math.round(ENERGY_DAY_MAX * miss / total) : 0);
+      if (dt.getDay() === 0) {
+        for (const id of weeklyIds(r)) if (!weekDone(d, weekKeyOf(dt), id)) energy -= ENERGY_WEEKLY;
+      }
+      energy = Math.min(100, energy);
       if (energy <= 0){
         if (stage > 0) stage--;
         prog = 0; energy = 50; drops++; lastDrop = k;
@@ -324,16 +483,33 @@ function update(fn){
   render(msg);
   schedulePush();
 }
+function act(id){
+  const h = H[id];
+  if (h.kind === 'water')  return addGlass();
+  if (h.kind === 'steps')  return openSteps();
+  if (h.kind === 'read')   return readAction();
+  if (h.kind === 'weekly') return toggleWeekly(id);
+  return toggle(id);
+}
 function toggle(id){
-  const m = BRUSH.find(x => x.id === id);
-  const st = mState(m, rec(load(), todayKey()));
-  if (st === 'soon') { render('⏰ ' + m.full + ' se abre a las ' + fmtH(m.from), true); return; }
-  if (st === 'lost') { render('❌ La franja de ' + m.name.toLowerCase() + ' ya ha pasado', true); return; }
+  const h = H[id];
+  const st = mState(h, rec(load(), todayKey()));
+  if (st === 'soon') { render('⏰ ' + h.full + ': se abre a las ' + fmtH(h.from), true); return; }
+  if (st === 'lost') { render('❌ La franja de «' + h.full.toLowerCase() + '» ya ha pasado', true); return; }
   update(d => {
     const t = today(d), was = complete(t);
     t[id] = !t[id];
-    if (!was && complete(t)) return '🌟 ¡Día perfecto! Mimo brilla de felicidad.';
+    if (!was && complete(t)) return PERFECT_MSG;
     return t[id] ? '✅ ¡Misión completada!' : 'Misión desmarcada';
+  });
+}
+function toggleWeekly(id){
+  const d = load(), t = rec(d, todayKey());
+  if (!t[id] && weekDone(d, weekKeyOf(logicalNow()), id)) { render('✅ Ya lo hiciste esta semana', true); return; }
+  update(d => {
+    const t = today(d);
+    t[id] = !t[id];
+    return t[id] ? H[id].icon + ' ¡Misión semanal completada! +' + H[id].xp + ' XP' : 'Misión desmarcada';
   });
 }
 function addGlass(){
@@ -344,7 +520,7 @@ function addGlass(){
     t.glasses = t.glasses || [];
     if (t.glasses.length >= MAX_GLASSES) return false;
     t.glasses.push(Date.now());
-    if (!was && complete(t)) return '🌟 ¡Día perfecto! Mimo brilla de felicidad.';
+    if (!was && complete(t)) return PERFECT_MSG;
     return '💧 ¡Glup! Mimo agradece la hidratación.';
   });
 }
@@ -356,7 +532,51 @@ function undoGlass(){
     return 'Vaso quitado';
   });
 }
-function rename(v){ update(d => { d.name = (v || '').trim().slice(0,16) || 'Jugador'; d.nameU = Date.now(); }); }
+function readAction(){
+  const t = rec(load(), todayKey());
+  if (t.read) { render('📖 Ya has leído hoy ✓', true); return; }
+  if (!t.readStart) {
+    update(d => { today(d).readStart = Date.now(); return '📖 Lectura empezada. Vuelve en ' + READ_MIN + ' min para confirmarla.'; });
+    return;
+  }
+  const left = t.readStart + READ_MIN*60000 - Date.now();
+  if (left > 0) { render('⏳ Te quedan ' + Math.ceil(left/60000) + ' min de lectura', true); return; }
+  update(d => {
+    const t = today(d), was = complete(t);
+    t.read = true;
+    return (!was && complete(t)) ? PERFECT_MSG : '📖 ¡Lectura completada!';
+  });
+}
+function cancelRead(){
+  update(d => { const t = today(d); t.read = false; t.readStart = null; return 'Lectura reiniciada'; });
+}
+function saveSteps(){
+  const el = document.getElementById('stepsIn');
+  const v = clamp(parseInt(el && el.value, 10) || 0, 0, 100000);
+  closeModal();
+  update(d => {
+    const t = today(d), was = complete(t);
+    t.steps = v;
+    t.sg = t.sg || settingsOf(d).stepGoal;
+    if (!was && complete(t)) return PERFECT_MSG;
+    return v >= t.sg ? '👟 ¡Objetivo de pasos cumplido!' : '👟 Pasos guardados: ' + fmtNum(v);
+  });
+}
+function saveSettings(){
+  const on = {};
+  document.querySelectorAll('#modal input[data-k]').forEach(i => { on[i.dataset.k] = i.checked; });
+  if (!Object.values(on).some(Boolean)) { document.getElementById('setErr').textContent = 'Deja al menos un hábito activado.'; return; }
+  const goal = clamp(Math.round((parseInt(document.getElementById('goalIn').value, 10) || 8000) / 500) * 500, 1000, 50000);
+  closeModal();
+  update(d => {
+    d.settings = { on, stepGoal: goal };
+    d.nameU = Date.now();
+    const t = today(d);
+    t.h = activeIds(settingsOf(d));
+    t.sg = goal;
+    return '⚙️ Hábitos guardados';
+  });
+}
 async function resetData(){
   if (!confirmReset) { confirmReset = true; render(); return; }
   confirmReset = false;
@@ -368,11 +588,50 @@ async function resetData(){
     } catch(e) { render('No se pudo borrar en la nube. Inténtalo con conexión.', true); return; }
   }
   const d = load();
-  save({ name:d.name, nameU:d.nameU, nameSyncedU:d.nameSyncedU, uid:d.uid, days:{}, bossDefeated:{}, bestStreak:0, syncedAt:0 });
+  save({ name:d.name, nameU:d.nameU, nameSyncedU:d.nameSyncedU, settings:d.settings, uid:d.uid, days:{}, bossDefeated:{}, bestStreak:0, syncedAt:0 });
   render('Progreso borrado');
   schedulePush();
 }
-function go(id){ tab = id; confirmReset = false; render(); }
+function go(id){ tab = id; confirmReset = false; rk.leaveConfirm = false; render(); if (id === 'rank') loadRanking(true); }
+
+/* ---------- ventanas (modal) ---------- */
+function openModal(html){
+  const m = document.getElementById('modal');
+  m.innerHTML = `<div class="sheet" onclick="event.stopPropagation()">${html}</div>`;
+  m.classList.add('open');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+function openSteps(){
+  const d = load(), t = rec(d, todayKey()), goal = stepGoalOf(d, t);
+  openModal(`<h3>👟 Pasos de hoy</h3>
+    <p class="mut small">Objetivo: ${fmtNum(goal)} pasos. Copia la cifra que marca la app de salud de tu móvil.</p>
+    <input id="stepsIn" class="field" type="number" inputmode="numeric" min="0" max="100000" value="${t.steps || ''}" placeholder="0" onkeydown="if(event.key==='Enter')saveSteps()">
+    <div class="btns"><button class="sm" onclick="closeModal()">Cancelar</button><button class="sm pri" onclick="saveSteps()">Guardar</button></div>`);
+  setTimeout(() => { const i = document.getElementById('stepsIn'); if (i) i.focus(); }, 60);
+}
+function openSettings(){
+  const s = settingsOf(load());
+  openModal(`<h3>⚙️ Mis hábitos</h3>
+    <p class="mut small">Activa los hábitos que quieres cuidar. Los cambios cuentan desde hoy.</p>
+    ${GROUPS.map(g => `<label class="opt"><span>${g.icon} ${g.name}</span><input type="checkbox" data-k="${g.key}" ${s.on[g.key] !== false ? 'checked' : ''}></label>`).join('')}
+    <label class="opt"><span>👟 Objetivo diario de pasos</span><input id="goalIn" class="field sm-field" type="number" inputmode="numeric" min="1000" max="50000" step="500" value="${s.stepGoal}"></label>
+    <div id="setErr" class="login-err" style="margin:6px 0 0"></div>
+    <div class="btns" style="margin-top:12px"><button class="sm" onclick="closeModal()">Cancelar</button><button class="sm pri" onclick="saveSettings()">Guardar</button></div>`);
+}
+function openRules(){
+  openModal(`<h3>📜 Reglas</h3>
+    <ul class="rules">
+      <li>Los cepillados solo se marcan en su franja: 6–12 h, 14–17 h y 20–3 h. La cama, antes de las 14 h.</li>
+      <li>Agua: un vaso de 250 ml cada ${COOLDOWN_MIN} min como máximo.</li>
+      <li>Leer: pulsa «Empezar» y confírmalo cuando pasen ${READ_MIN} min.</li>
+      <li>Pasos: apunta la cifra de la app de salud de tu móvil.</li>
+      <li>El baño se friega una vez por semana, el día que quieras.</li>
+      <li>El día termina a las 3:00. Lo que no marques a tiempo se pierde.</li>
+      <li>Al acabar el día, Mimo pierde energía según las misiones que falten (hasta ${ENERGY_DAY_MAX}). Un día perfecto le devuelve ${ENERGY_UP}. Una misión semanal sin hacer quita ${ENERGY_WEEKLY}.</li>
+      <li>Si la energía llega a 0, Mimo baja una etapa.</li>
+    </ul>
+    <div class="btns" style="margin-top:14px"><button class="sm pri" onclick="closeModal()">Entendido</button></div>`);
+}
 
 /* ---------- datos derivados ---------- */
 function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -381,55 +640,68 @@ function build(d){
   const xp = totalXP(d);
   const wk = weekKeyOf(logicalNow());
   const dmg = weekDmg(d, wk);
+  const hp = bossHP(d);
   const st = streak(d);
   const sim = simulate(d);
+  const doneCount = doneDaily(t), total = dailyIds(t).length;
+  const mood = sim.energy < 35 ? 'sad' : (total && doneCount === total ? 'happy' : 'normal');
   return {
-    t, xp, level: Math.floor(xp/100) + 1, into: xp % 100, wk, dmg,
-    hpLeft: Math.max(0, BOSS_HP - dmg), bossDown: !!d.bossDefeated[wk],
+    t, xp, level: Math.floor(xp/100) + 1, into: xp % 100, wk, dmg, hp,
+    hpLeft: Math.max(0, hp - dmg), bossDown: !!d.bossDefeated[wk],
     st, best: Math.max(d.bestStreak || 0, st),
     perfect: perfectDays(d), bossCount: Object.keys(d.bossDefeated).length,
-    doneCount: brushDone(t) + (waterOk(t) ? 1 : 0), total: BRUSH.length + 1,
-    sim, pet: mimoSVG(sim.stage, sim.energy < 35 ? 'sad' : (brushDone(t) + (waterOk(t) ? 1 : 0)) === BRUSH.length + 1 ? 'happy' : 'normal'), stageName: STAGES[sim.stage],
+    doneCount, total, sim, pet: mimoSVG(sim.stage, mood), stageName: STAGES[sim.stage],
     name: d.name || 'Jugador'
   };
 }
+/* Estado y texto corto de cada misión para las casillas y la lista */
+function info(id, d, t){
+  const h = H[id];
+  switch (h.kind) {
+    case 'brush': case 'check': {
+      const st = mState(h, t);
+      const sub = st === 'done' ? 'Hecho ✓' : st === 'soon' ? 'Desde ' + fmtH(h.from) : st === 'lost' ? 'Perdida' : (h.to ? 'Hasta ' + fmtH(h.to) : 'Pendiente');
+      return { st, sub };
+    }
+    case 'water': {
+      const n = glassCount(t);
+      if (n >= GLASSES_GOAL) return { st:'done', sub: n + '/' + GLASSES_GOAL + ' ✓' };
+      const left = cooldownLeft(t);
+      return left > 0 ? { st:'wait', sub:'⏳ ' + Math.ceil(left/60000) + ' min' } : { st:'open', sub: n + '/' + GLASSES_GOAL + ' vasos' };
+    }
+    case 'steps': {
+      const g = stepGoalOf(d, t), s = t.steps || 0;
+      return { st: s >= g ? 'done' : 'open', sub: fmtK(s) + ' / ' + fmtK(g) };
+    }
+    case 'read': {
+      if (t.read) return { st:'done', sub:'Hecho ✓' };
+      if (!t.readStart) return { st:'open', sub:'Empezar' };
+      const left = t.readStart + READ_MIN*60000 - Date.now();
+      return left > 0 ? { st:'wait', sub:'Leyendo · ' + Math.ceil(left/60000) + ' min' } : { st:'open', sub:'Confirmar' };
+    }
+    case 'weekly': {
+      const wd = weekDone(d, weekKeyOf(logicalNow()), id);
+      return { st: wd ? 'done' : 'open', sub: wd ? 'Semana ✓' : 'Esta semana' };
+    }
+  }
+}
 
 /* ---------- pantallas ---------- */
-function brushSub(m, s){
-  return {done:'Hecho ✓', open:'Hasta las ' + fmtH(m.to), soon:'Desde las ' + fmtH(m.from), lost:'Perdida'}[s];
-}
-function waterCard(t){
-  const filled = glassCount(t);
-  const glasses = Array.from({length: GLASSES_GOAL}, (_,i) => `<div class="glass ${i<filled?'on':''}"></div>`).join('');
-  const left = cooldownLeft(t);
-  const addBtn = left > 0
-    ? `<button class="sm wait" onclick="addGlass()">⏳ Próximo vaso en ${Math.ceil(left/60000)} min</button>`
-    : `<button class="sm pri" onclick="addGlass()">+ vaso (250 ml)</button>`;
-  return `<div class="card">
-    <div class="label"><b>💧 Agua</b><span>${waterMl(t)} / ${WATER_GOAL} ml</span></div>
-    <div class="water">${glasses}</div>
-    <div class="btns">
-      <button class="sm" onclick="undoGlass()" aria-label="Quitar un vaso">−</button>
-      ${addBtn}
-    </div>
-    <div class="row"><span>Un vaso cada ${COOLDOWN_MIN} min como máximo</span></div>
-  </div>`;
-}
-
 function screenChar(d, c){
   const t = c.t, s = c.sim;
   const yesterday = keyOf(addDays(logicalNow(), -1));
   let mood, bad = false;
   if (s.lastDrop === yesterday) { mood = 'Ayer Mimo se quedó sin energía y volvió a la etapa «' + c.stageName + '».'; bad = true; }
   else if (s.energy < 35) { mood = 'Mimo está agotado. Completa las misiones de hoy para que se recupere.'; bad = true; }
-  else if (c.doneCount === c.total) mood = '¡Mimo está radiante!';
+  else if (c.total && c.doneCount === c.total) mood = '¡Mimo está radiante!';
   else if (c.doneCount === 0) mood = 'Mimo te espera. ¡Empieza el día!';
   else mood = 'Faltan ' + (c.total - c.doneCount) + ' misiones para completar el día.';
 
-  const petCls = s.energy < 35 ? 'sad' : (c.doneCount === c.total ? 'glow' : '');
-  const btns = BRUSH.map(m => {
-    const st = mState(m, t);
-    return `<button class="big ${st}" onclick="toggle('${m.id}')"><span>${m.icon}</span>${m.name}<small>${brushSub(m, st)}</small></button>`;
+  const petCls = s.energy < 35 ? 'sad' : (c.total && c.doneCount === c.total ? 'glow' : '');
+  const ids = hList(t);
+  const tiles = ids.map(id => {
+    const h = H[id], i = info(id, d, t);
+    return `<button class="tile ${i.st}" onclick="act('${id}')"><span class="ti">${h.icon}</span><b>${h.name}</b><small>${i.sub}</small></button>`;
   }).join('');
   const eColor = s.energy < 35 ? 'var(--red)' : s.energy < 65 ? 'var(--gold)' : 'var(--acc)';
   const evo = c.sim.stage === PETS.length-1 ? 'Etapa máxima' : `${s.prog} / ${STAGE_XP} para evolucionar`;
@@ -438,70 +710,197 @@ function screenChar(d, c){
     <div class="mood ${bad?'bad':''}">${mood}</div>
     <div class="card">
       <div class="label"><b>⚡ Energía</b><span>${s.energy} / 100</span></div>
-      <div class="bar"><i style="width:${s.energy}%;background:${eColor}"></i></div>
+      <div class="bar"><i style="width:${Math.max(0, s.energy)}%;background:${eColor}"></i></div>
       <div class="row"><span>✨ ${evo}</span><span>🔥 ${c.st} días</span></div>
     </div>
-    <div class="row3">${btns}</div>
-    ${waterCard(t)}`;
+    <div class="grid ${ids.length <= 4 ? 'g2' : ''}">${tiles}</div>`;
+}
+
+function missionRow(id, d, t){
+  const h = H[id], i = info(id, d, t);
+  let desc = i.sub, extra = '', reward = '+' + h.xp + ' XP';
+  if (h.kind === 'brush' || (h.kind === 'check' && h.from !== undefined)) desc = fmtH(h.from) + ' – ' + fmtH(h.to) + (i.st === 'lost' ? ' · Perdida' : i.st === 'soon' ? ' · Aún no' : '');
+  if (h.kind === 'check' && h.from === undefined) desc = i.st === 'done' ? 'Hecho ✓' : 'Cuando quieras';
+  if (h.kind === 'water') {
+    desc = waterMl(t) + ' / ' + WATER_GOAL + ' ml' + (i.st === 'wait' ? ' · ' + i.sub : '');
+    reward = '+' + XP_GLASS + '/vaso';
+    extra = `<span class="mini-btns"><button onclick="event.stopPropagation();undoGlass()" aria-label="Quitar un vaso">−</button><button onclick="event.stopPropagation();addGlass()" aria-label="Añadir un vaso">+</button></span>`;
+  }
+  if (h.kind === 'steps') desc = fmtNum(t.steps || 0) + ' / ' + fmtNum(stepGoalOf(d, t)) + ' pasos · toca para apuntar';
+  if (h.kind === 'read') {
+    desc = t.read ? 'Hecho ✓' : !t.readStart ? 'Toca para empezar a leer' : i.sub === 'Confirmar' ? 'Toca para confirmar' : i.sub;
+    if (t.readStart || t.read) extra = `<button class="link" onclick="event.stopPropagation();cancelRead()">Reiniciar</button>`;
+  }
+  if (h.kind === 'weekly') desc = 'Una vez por semana · ' + (i.st === 'done' ? 'hecho ✓' : 'pendiente');
+  return `<div class="quest ${i.st}" role="button" tabindex="0" onclick="act('${id}')">
+      <span class="qi">${h.icon}</span>
+      <span class="qt">${h.full}<small>${desc}</small></span>
+      ${extra}
+      <span class="rw">${reward}</span>
+      <span class="check">${i.st==='done'?'✓':i.st==='lost'?'✕':''}</span>
+    </div>`;
 }
 
 function screenMissions(d, c){
   const t = c.t;
-  const items = BRUSH.map(m => {
-    const st = mState(m, t);
-    const desc = fmtH(m.from) + ' – ' + fmtH(m.to) + (st === 'lost' ? ' · Perdida' : st === 'soon' ? ' · Aún no' : '');
-    return `<button class="quest ${st}" onclick="toggle('${m.id}')">
-      <span class="qi">${m.icon}</span>
-      <span class="qt">${m.full}<small>${desc}</small></span>
-      <span class="rw">+${XP_Q} XP</span>
-      <span class="check">${st==='done'?'✓':st==='lost'?'✕':''}</span>
-    </button>`;
-  }).join('');
-  const w = waterOk(t);
+  const daily = dailyIds(t).map(id => missionRow(id, d, t)).join('');
+  const weekly = weeklyIds(t).map(id => missionRow(id, d, t)).join('');
   return `
-    <h2>Misiones de hoy · ${c.doneCount} / ${c.total}</h2>
-    <div class="qlist grow">${items}
-    <div class="quest static ${w?'done':''}">
-      <span class="qi">💧</span>
-      <span class="qt">Beber 2 L de agua<small>${waterMl(t)} / ${WATER_GOAL} ml · un vaso cada ${COOLDOWN_MIN} min</small></span>
-      <span class="rw">+${XP_GLASS}/vaso</span>
-      <span class="check">${w?'✓':''}</span>
-    </div>
-    <div class="quest static ${complete(t)?'done':''}">
-      <span class="qi">🌟</span>
-      <span class="qt">Día perfecto<small>Todas las misiones completadas</small></span>
-      <span class="rw">+${XP_DAY} XP</span>
-      <span class="check">${complete(t)?'✓':''}</span>
-    </div></div>
-    <h2>Reglas</h2>
-    <div class="card"><ul class="rules">
-      <li>Cada cepillado solo se puede marcar dentro de su franja horaria.</li>
-      <li>El día termina a las 3:00. Lo que no marques a tiempo se pierde.</li>
-      <li>Cada misión que falte al acabar el día quita ${ENERGY_DOWN} de energía a Mimo. Un día perfecto le devuelve ${ENERGY_UP}.</li>
-      <li>Si la energía llega a 0, Mimo baja una etapa.</li>
-    </ul></div>`;
+    <h2 class="hrow"><span>Misiones de hoy · ${c.doneCount} / ${c.total}</span><button class="link" onclick="openRules()">Reglas</button></h2>
+    <div class="qlist grow">${daily}${weekly ? `<div class="sep">Semanal</div>${weekly}` : ''}</div>
+    <div class="card label perfect ${complete(t)?'ok':''}"><span>🌟 Día perfecto: todas las misiones de hoy</span><b>+${XP_PERFECT} XP</b></div>`;
 }
 
 function screenBoss(d, c){
-  const pct = c.bossDown ? 0 : c.hpLeft / BOSS_HP * 100;
+  const pct = c.bossDown ? 0 : c.hpLeft / c.hp * 100;
   const names = ['L','M','X','J','V','S','D'];
-  const mon = parseKey(c.wk);
-  let rows = '';
-  for (let i = 0; i < 7; i++){
-    const dmg = dayDmg(rec(d, keyOf(addDays(mon, i))));
-    rows += `<div class="day"><span>${names[i]}</span><div class="dbar"><i style="width:${dmg/DAY_DMG_MAX*100}%"></i></div><span>${dmg}</span></div>`;
-  }
+  const max = Math.max(1, dailyMaxDmg(d) + 30);
+  const rows = weekDays(c.wk).map((k, i) => {
+    const dmg = d.days[k] ? dayDmg(d.days[k]) : 0;
+    return `<div class="day"><span>${names[i]}</span><div class="dbar"><i style="width:${Math.min(100, dmg/max*100)}%"></i></div><span>${dmg}</span></div>`;
+  }).join('');
   return `
     <div class="stage grow"><span class="tag">Jefe semanal</span><div class="boss-art">${c.bossDown ? '💀' : '🐉'}</div></div>
     <h2 class="c">Dragón de la Placa</h2>
     <div class="bar big"><i style="width:${pct}%;background:var(--red)"></i></div>
-    <div class="c mut" style="margin-top:6px">${c.bossDown ? '¡Derrotado esta semana!' : c.hpLeft + ' / ' + BOSS_HP + ' HP'}</div>
+    <div class="c mut" style="margin-top:6px">${c.bossDown ? '¡Derrotado esta semana!' : c.hpLeft + ' / ' + c.hp + ' HP'}</div>
     <h2>Daño esta semana</h2>
     <div class="card">${rows}</div>
-    <div class="note">Cada cepillado quita ${DMG_Q} HP y cada vaso ${DMG_GLASS}. Cada semana empieza de cero.</div>`;
+    <div class="note">Cada misión le quita vida al dragón. Su vida depende de los hábitos que tengas activos. Cada semana empieza de cero.</div>`;
+}
+
+/* ---------- ranking con grupos ---------- */
+let rk = { view:'group', groups:null, sel:null, rows:null, loading:false, err:'', at:0, leaveConfirm:false };
+async function loadRanking(force){
+  if (!cloud || !user || rk.loading) return;
+  if (!force && rk.groups && Date.now() - rk.at < 30000) return;
+  rk.loading = true;
+  try {
+    const g = await cloud.from('groups').select('id,name,code,owner_id,created_at').order('created_at');
+    if (g.error) throw g.error;
+    rk.groups = g.data || [];
+    if (!rk.groups.find(x => x.id === rk.sel)) rk.sel = rk.groups.length ? rk.groups[0].id : null;
+    if (rk.sel) {
+      const r = await cloud.rpc('group_ranking', { g: rk.sel });
+      if (r.error) throw r.error;
+      rk.rows = r.data || [];
+    } else rk.rows = [];
+    rk.err = ''; rk.at = Date.now();
+  } catch (e) {
+    console.warn('Mimo ranking:', e);
+    rk.err = navigator.onLine ? 'No se pudo cargar el ranking.' : 'Sin conexión. El ranking necesita internet.';
+  }
+  rk.loading = false;
+  if (tab === 'rank') render();
+}
+function rkView(v){ rk.view = v; render(); if (v === 'group') loadRanking(); }
+function selectGroup(id){ rk.sel = id; rk.rows = null; rk.leaveConfirm = false; render(); loadRanking(true); }
+function curGroup(){ return (rk.groups || []).find(g => g.id === rk.sel); }
+function rpcError(e){ return (e && e.message) ? e.message.replace(/^.*?:\s*/, '') : 'Algo ha fallado'; }
+function openCreateGroup(){
+  openModal(`<h3>👥 Crear grupo</h3>
+    <p class="mut small">Ponle un nombre. Después compartirás un código para que tus amigos se unan.</p>
+    <input id="grpName" class="field" maxlength="30" placeholder="Ej.: La pandilla" onkeydown="if(event.key==='Enter')createGroup()">
+    <div id="grpErr" class="login-err" style="margin:0 0 10px"></div>
+    <div class="btns"><button class="sm" onclick="closeModal()">Cancelar</button><button class="sm pri" onclick="createGroup()">Crear</button></div>`);
+  setTimeout(() => { const i = document.getElementById('grpName'); if (i) i.focus(); }, 60);
+}
+async function createGroup(){
+  const name = (document.getElementById('grpName').value || '').trim();
+  const err = document.getElementById('grpErr');
+  if (!name) { err.textContent = 'Escribe un nombre.'; return; }
+  const { data, error } = await cloud.rpc('create_group', { group_name: name });
+  if (error) { err.textContent = rpcError(error); return; }
+  const g = Array.isArray(data) ? data[0] : data;
+  closeModal();
+  rk.sel = g.id; rk.view = 'group'; rk.groups = null;
+  render('👥 Grupo creado. Comparte el código ' + g.code);
+  loadRanking(true);
+}
+function openJoinGroup(){
+  openModal(`<h3>🔑 Unirme a un grupo</h3>
+    <p class="mut small">Escribe el código de 6 caracteres que te ha pasado tu amigo.</p>
+    <input id="grpCode" class="field code" maxlength="6" autocapitalize="characters" autocomplete="off" placeholder="ABC123" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')joinGroup()">
+    <div id="grpErr" class="login-err" style="margin:0 0 10px"></div>
+    <div class="btns"><button class="sm" onclick="closeModal()">Cancelar</button><button class="sm pri" onclick="joinGroup()">Unirme</button></div>`);
+  setTimeout(() => { const i = document.getElementById('grpCode'); if (i) i.focus(); }, 60);
+}
+async function joinGroup(code){
+  const fromModal = code === undefined;
+  code = (fromModal ? document.getElementById('grpCode').value : code || '').trim().toUpperCase();
+  if (code.length !== 6) { if (fromModal) document.getElementById('grpErr').textContent = 'El código tiene 6 caracteres.'; return; }
+  const { data, error } = await cloud.rpc('join_group', { group_code: code });
+  if (error) {
+    if (fromModal) document.getElementById('grpErr').textContent = rpcError(error);
+    else render('No se pudo entrar en el grupo: ' + rpcError(error), true);
+    return;
+  }
+  const g = Array.isArray(data) ? data[0] : data;
+  if (fromModal) closeModal();
+  rk.sel = g.id; rk.view = 'group'; rk.groups = null; tab = 'rank';
+  render('👥 Te has unido a «' + g.name + '»');
+  loadRanking(true);
+}
+async function shareGroup(){
+  const g = curGroup();
+  if (!g) return;
+  const url = location.origin + location.pathname + '?join=' + g.code;
+  const text = 'Únete a mi grupo «' + g.name + '» en Mimo. Código: ' + g.code;
+  try {
+    if (navigator.share) { await navigator.share({ title:'Mimo', text, url }); return; }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  try { await navigator.clipboard.writeText(text + '\n' + url); render('📋 Enlace copiado. Pégalo a tus amigos.'); }
+  catch (e) { render('Código del grupo: ' + g.code, true); }
+}
+async function leaveGroup(){
+  if (!rk.leaveConfirm) { rk.leaveConfirm = true; render(); return; }
+  rk.leaveConfirm = false;
+  const { error } = await cloud.from('group_members').delete().eq('group_id', rk.sel).eq('user_id', user.id);
+  if (error) { render('No se pudo salir del grupo', true); return; }
+  rk.sel = null; rk.groups = null;
+  render('Has salido del grupo');
+  loadRanking(true);
+}
+function groupView(){
+  const actions = `<div class="btns2"><button class="btn-out" onclick="openCreateGroup()">➕ Crear grupo</button><button class="btn-out" onclick="openJoinGroup()">🔑 Unirme</button></div>`;
+  if (rk.err && !rk.groups) return `<div class="card c grow empty"><p>${esc(rk.err)}</p><button class="sm" onclick="loadRanking(true)">Reintentar</button></div>`;
+  if (!rk.groups) { setTimeout(() => loadRanking(), 0); return `<div class="card c grow empty"><p class="mut">Cargando ranking…</p></div>`; }
+  if (!rk.groups.length) return `
+    <div class="card c grow empty">
+      <div style="font-size:54px">👥</div>
+      <h3 style="margin:6px 0">Compite con tus amigos</h3>
+      <p class="mut small">Crea un grupo y comparte el código, o únete al grupo de alguien. Veréis quién consigue más XP cada semana.</p>
+    </div>${actions}`;
+  const g = curGroup();
+  const chips = rk.groups.length > 1
+    ? `<div class="chips">${rk.groups.map(x => `<button class="${x.id === rk.sel ? 'on' : ''}" onclick="selectGroup('${x.id}')">${esc(x.name)}</button>`).join('')}</div>` : '';
+  const medals = ['🥇','🥈','🥉'];
+  const rows = (rk.rows || []).map((r, i) => {
+    const me = r.user_id === user.id;
+    return `<div class="rrow ${me ? 'me' : ''}">
+      <span class="pos">${medals[i] || (i + 1)}</span>
+      <span class="rpet">${mimoSVG(r.stage || 0, 'normal')}</span>
+      <span class="rname"><b>${esc(r.display_name)}${me ? ' <i>(tú)</i>' : ''}</b><small>🔥 ${r.streak} días · ${STAGES[r.stage || 0]}</small></span>
+      <span class="rxp">${r.week_xp}<small>XP</small></span>
+    </div>`;
+  }).join('');
+  return `${chips}
+    <div class="card gh">
+      <div><b>${esc(g.name)}</b><span class="mut small">${(rk.rows || []).length} miembros · XP de esta semana</span></div>
+      <button class="codebtn" onclick="shareGroup()" aria-label="Compartir código">${g.code} ↗</button>
+    </div>
+    <div class="card rlist grow">${rows || '<p class="mut c">Cargando…</p>'}</div>
+    <div class="btns3"><button class="btn-out" onclick="openCreateGroup()">➕ Crear</button><button class="btn-out" onclick="openJoinGroup()">🔑 Unirme</button><button class="btn-out leave" onclick="leaveGroup()">${rk.leaveConfirm ? '¿Seguro?' : 'Salir'}</button></div>`;
 }
 
 function screenRank(d, c){
+  const online = cloud && user;
+  const seg = online ? `<div class="seg"><button class="${rk.view === 'group' ? 'on' : ''}" onclick="rkView('group')">👥 Grupo</button><button class="${rk.view === 'me' ? 'on' : ''}" onclick="rkView('me')">📈 Yo</button></div>` : '';
+  if (online && rk.view === 'group') return seg + groupView();
+  return seg + screenRankMe(d, c);
+}
+
+function screenRankMe(d, c){
   const weeks = [];
   for (let i = 4; i >= 0; i--){
     const wk = weekKeyOf(addDays(logicalNow(), -7*i));
@@ -517,12 +916,12 @@ function screenRank(d, c){
     </div>`;
   }).join('');
   const record = Math.max(...weeks.map(w => w.xp));
-  const mon = parseKey(c.wk);
-  let perf = 0, brushes = 0, glasses = 0;
-  for (let i = 0; i < 7; i++){
-    const r = rec(d, keyOf(addDays(mon, i)));
+  let perf = 0, missions = 0, glasses = 0;
+  for (const k of weekDays(c.wk)) {
+    const r = d.days[k];
+    if (!r) continue;
     if (complete(r)) perf++;
-    brushes += brushDone(r);
+    missions += doneDaily(r) + weeklyIds(r).filter(id => r[id]).length;
     glasses += glassCount(r);
   }
   return `
@@ -531,11 +930,11 @@ function screenRank(d, c){
     <h2>Esta semana</h2>
     <div class="tri">
       <div class="card mini"><b>${perf}</b><span>días perfectos</span></div>
-      <div class="card mini"><b>${brushes}/${7*BRUSH.length}</b><span>cepillados</span></div>
+      <div class="card mini"><b>${missions}</b><span>misiones hechas</span></div>
       <div class="card mini"><b>${glasses}</b><span>vasos de agua</span></div>
     </div>
     <div class="card label"><b>Récord semanal (5 semanas)</b><span>${record} XP</span></div>
-    <div class="note">Tu marcador personal. El ranking con amigos necesita un servidor y llegará más adelante.</div>`;
+    ${cloud && user ? '' : '<div class="note">Inicia sesión para competir con tus amigos.</div>'}`;
 }
 
 function screenProfile(d, c){
@@ -546,24 +945,25 @@ function screenProfile(d, c){
     ['⚔️','Primer jefe vencido', c.bossCount >= 1],
     ['🪽','Mimo alado', c.sim.stage >= 4]
   ].map(([i,n,ok]) => `<span class="${ok?'':'off'}">${i} ${n}</span>`).join('');
+  const s = settingsOf(d), nOn = GROUPS.filter(g => s.on[g.key] !== false).length;
   return `
     <div class="card prof">
       <div class="pet sm">${c.pet}</div>
       <div style="flex:1">
-        <input value="${esc(c.name)}" maxlength="16" onchange="rename(this.value)" aria-label="Nombre de jugador">
-        <div class="mut small" style="margin-top:6px">Nivel ${c.level} · ${c.xp} XP · ${c.stageName}</div>
+        <div class="pname">${esc(c.name)}</div>
+        <div class="mut small" style="margin-top:4px">Nivel ${c.level} · ${c.xp} XP · ${c.stageName}</div>
       </div>
     </div>
+    <button class="card setbtn" onclick="openSettings()"><span>⚙️ Mis hábitos y objetivos</span><span class="mut small">${nOn} de ${GROUPS.length} activos ›</span></button>
     <h2>Insignias</h2>
     <div class="card badges">${badges}</div>
-    <h2>Estadísticas</h2>
-    <div class="card grow stats">
-      <div class="stat"><span>XP total</span><span>${c.xp}</span></div>
-      <div class="stat"><span>Racha actual</span><span>${c.st} días</span></div>
-      <div class="stat"><span>Mejor racha</span><span>${c.best} días</span></div>
-      <div class="stat"><span>Días perfectos</span><span>${c.perfect}</span></div>
-      <div class="stat"><span>Jefes derrotados</span><span>${c.bossCount}</span></div>
-      <div class="stat"><span>Veces que Mimo bajó de etapa</span><span>${c.sim.drops}</span></div>
+    <div class="tri statgrid grow">
+      <div class="card mini"><b>${c.xp}</b><span>XP total</span></div>
+      <div class="card mini"><b>${c.level}</b><span>nivel</span></div>
+      <div class="card mini"><b>${c.best}</b><span>mejor racha</span></div>
+      <div class="card mini"><b>${c.perfect}</b><span>días perfectos</span></div>
+      <div class="card mini"><b>${c.bossCount}</b><span>jefes vencidos</span></div>
+      <div class="card mini"><b>${c.sim.drops}</b><span>veces que bajó</span></div>
     </div>
     ${accountSection()}`;
 }
@@ -592,10 +992,14 @@ function setSync(s){
 }
 
 async function boot(){
+  const d = load();
+  if (ensureToday(d)) save(d);
   render();
   if (!cloud) return;
   const params = new URLSearchParams(location.search);
   const authError = params.get('error_description');
+  const joinCode = params.get('join');
+  if (joinCode) { try { localStorage.setItem('mimo-join', joinCode); } catch(e) {} }
   const { data } = await cloud.auth.getSession();
   if (location.search) history.replaceState(null, '', location.pathname);
   cloud.auth.onAuthStateChange((event, session) => {
@@ -612,7 +1016,7 @@ function showLogin(msg = ''){
   el.innerHTML = `<div class="login-box">
     <div class="pet">${mimoSVG(0, 'normal')}</div>
     <h1>Mimo</h1>
-    <p>Cuida a Mimo cepillándote los dientes y bebiendo agua.</p>
+    <p>Cuida a Mimo cuidando tus hábitos.</p>
     ${prov.includes('google') ? `<button class="auth google" onclick="signIn('google', this)">Continuar con Google</button>` : ''}
     ${prov.includes('apple') ? `<button class="auth apple" onclick="signIn('apple', this)">Continuar con Apple</button>` : ''}
     ${msg ? `<div class="login-err">${esc(msg)}</div>` : ''}
@@ -634,6 +1038,7 @@ async function signOut(){
   await pushNow();
   await cloud.auth.signOut();
   user = null;
+  rk = { view:'group', groups:null, sel:null, rows:null, loading:false, err:'', at:0, leaveConfirm:false };
   save({ name:'Jugador', days:{}, bossDefeated:{}, bestStreak:0 });
   tab = 'char';
   render();
@@ -649,7 +1054,17 @@ async function onSignedIn(u){
   hideLogin();
   render();
   await pullAndMerge();
+  let pendingJoin = null;
+  try { pendingJoin = localStorage.getItem('mimo-join'); localStorage.removeItem('mimo-join'); } catch(e) {}
+  if (pendingJoin) joinGroup(pendingJoin);
   cloud.from('profiles').update({ last_seen_at: new Date().toISOString() }).eq('id', u.id).then(() => {});
+}
+
+const EXTRA_KEYS = ['h','steps','sg','read','readStart','bed','kitchen','bath'];
+function extraOf(r){
+  const e = {};
+  for (const k of EXTRA_KEYS) if (r[k] !== undefined && r[k] !== null) e[k] = r[k];
+  return e;
 }
 
 /* Trae lo que hay en la nube y lo mezcla con lo local: gana lo más reciente. */
@@ -659,8 +1074,8 @@ async function pullAndMerge(){
   setSync('syncing');
   try {
     const [p, logs, wins, prog] = await Promise.all([
-      cloud.from('profiles').select('display_name,updated_at').eq('id', user.id).maybeSingle(),
-      cloud.from('day_logs').select('day,am,md,pm,glasses,updated_at').eq('user_id', user.id),
+      cloud.from('profiles').select('display_name,settings,updated_at').eq('id', user.id).maybeSingle(),
+      cloud.from('day_logs').select('day,am,md,pm,glasses,extra,updated_at').eq('user_id', user.id),
       cloud.from('boss_wins').select('week_start').eq('user_id', user.id),
       cloud.from('progress').select('best_streak').eq('user_id', user.id).maybeSingle()
     ]);
@@ -668,14 +1083,19 @@ async function pullAndMerge(){
     const d = load();
     if (p.data) {
       const su = Date.parse(p.data.updated_at);
-      if (!d.nameU || d.nameU < su) { d.name = p.data.display_name; d.nameU = su; d.nameSyncedU = su; }
+      d.name = p.data.display_name;
+      if (!d.nameU || d.nameU < su) {
+        if (p.data.settings && Object.keys(p.data.settings).length) d.settings = p.data.settings;
+        d.nameU = su; d.nameSyncedU = su;
+      }
     }
     const server = {};
     for (const r of logs.data || []) server[r.day] = r;
     for (const k in server) {
       const r = server[k], su = Date.parse(r.updated_at), loc = d.days[k];
-      if (!loc || (loc.u || 0) <= su) d.days[k] = { am:!!r.am, md:!!r.md, pm:!!r.pm, glasses:r.glasses || [], u:su };
+      if (!loc || (loc.u || 0) <= su) d.days[k] = Object.assign({ am:!!r.am, md:!!r.md, pm:!!r.pm, glasses:r.glasses || [] }, r.extra || {}, { u:su });
     }
+    ensureToday(d);
     let minDirty = Infinity, maxU = 0;
     for (const k in d.days) {
       const r = d.days[k], s = server[k];
@@ -700,7 +1120,7 @@ function schedulePush(){
   pushTimer = setTimeout(pushNow, 800);
 }
 
-/* Sube los días modificados, el nombre, los jefes y el resumen de progreso. */
+/* Sube los días modificados, el perfil, los jefes y el resumen de progreso. */
 async function pushNow(){
   if (!cloud || !user) return;
   if (pushing) { pushAgain = true; return; }
@@ -715,7 +1135,8 @@ async function pushNow(){
       const r = d.days[k];
       maxU = Math.max(maxU, r.u);
       return { user_id:user.id, day:k, am:!!r.am, md:!!r.md, pm:!!r.pm,
-               glasses:(r.glasses || []).slice(0, MAX_GLASSES), updated_at:new Date(r.u).toISOString() };
+               glasses:(r.glasses || []).slice(0, MAX_GLASSES), extra:extraOf(r),
+               updated_at:new Date(r.u).toISOString() };
     });
     if (rows.length) {
       const { error } = await cloud.from('day_logs').upsert(rows, { onConflict:'user_id,day' });
@@ -723,7 +1144,7 @@ async function pushNow(){
     }
     if ((d.nameU || 0) > (d.nameSyncedU || 0)) {
       const { error } = await cloud.from('profiles')
-        .update({ display_name:d.name, updated_at:new Date(d.nameU).toISOString() }).eq('id', user.id);
+        .update({ settings:d.settings || {}, updated_at:new Date(d.nameU).toISOString() }).eq('id', user.id);
       if (error) throw error;
     }
     const wins = Object.keys(d.bossDefeated).map(w => ({ user_id:user.id, week_start:w }));
@@ -733,7 +1154,7 @@ async function pushNow(){
     }
     const c = build(d);
     const { error } = await cloud.from('progress').upsert({
-      user_id:user.id, xp:c.xp, level:c.level, stage:c.sim.stage, energy:Math.max(0, Math.min(100, c.sim.energy)),
+      user_id:user.id, xp:c.xp, level:c.level, stage:c.sim.stage, energy:clamp(c.sim.energy, 0, 100),
       streak:c.st, best_streak:c.best, perfect_days:c.perfect, bosses:c.bossCount,
       week_start:c.wk, week_xp:weekXP(d, c.wk), updated_at:new Date().toISOString()
     }, { onConflict:'user_id' });
@@ -743,6 +1164,7 @@ async function pushNow(){
     d2.nameSyncedU = Math.max(d2.nameSyncedU || 0, d.nameU || 0);
     save(d2);
     setSync('ok');
+    if (tab === 'rank' && rk.view === 'group') loadRanking(true);
   } catch (e) {
     console.warn('Mimo sync (subida):', e);
     setSync(navigator.onLine ? 'error' : 'offline');
@@ -771,7 +1193,10 @@ function accountSection(){
 }
 
 /* ---------- render ---------- */
+let lastToast = { msg:'', warn:false, until:0 };
 function render(msg = '', warn = false){
+  if (msg) lastToast = { msg, warn, until: Date.now() + 2600 };
+  else if (lastToast.until > Date.now()) { msg = lastToast.msg; warn = lastToast.warn; }
   const main = document.getElementById('main');
   const scroll = main.scrollTop;
   const d = load(), c = build(d);
@@ -785,7 +1210,7 @@ function render(msg = '', warn = false){
   main.className = 'fill';
   main.innerHTML = (msg ? `<div class="toast ${warn?'warn':''}">${esc(msg)}</div>` : '') + screens[tab](d, c);
   main.scrollTop = scroll;
-  if (msg) setTimeout(() => { const t = document.querySelector('.toast'); if (t) t.remove(); }, 2600);
+  if (msg) setTimeout(() => { if (lastToast.until <= Date.now()) { const t = document.querySelector('.toast'); if (t) t.remove(); } }, lastToast.until - Date.now() + 20);
 
   document.getElementById('nav').innerHTML = TABS.map(x => `
     <button class="${x.center?'center':''} ${x.id===tab?'on':''}" onclick="go('${x.id}')">
@@ -795,7 +1220,7 @@ function render(msg = '', warn = false){
 }
 
 boot();
-setInterval(() => { if (tab !== 'profile' && !document.querySelector('.toast')) render(); }, 30000);
+setInterval(() => { if (tab === 'rank') loadRanking(); if (tab !== 'profile' && !document.querySelector('.toast') && !document.getElementById('modal').classList.contains('open')) render(); }, 30000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { render(); if (user && Date.now() - lastPull > 60000) pullAndMerge(); } });
 window.addEventListener('online', () => pushNow());
 
