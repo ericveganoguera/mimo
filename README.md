@@ -17,11 +17,15 @@ App de hábitos gamificada: cuida a **Mimo**, tu criatura, cepillándote los die
 1. Abre la web en Chrome.
 2. Menú ⋮ → **Instalar aplicación** (o **Añadir a pantalla de inicio**).
 
-Los datos se guardan en el dispositivo (localStorage). No hay servidor.
+Los datos se guardan en el dispositivo y, si inicias sesión con Google (o Apple), se sincronizan con Supabase.
+La configuración de la nube está en [`supabase/SETUP.md`](supabase/SETUP.md) y el esquema en [`supabase/schema.sql`](supabase/schema.sql).
 
 ## Estructura
 
 - `index.html`: toda la app (HTML, CSS y JS).
 - `manifest.webmanifest`: datos para instalarla como app.
 - `sw.js`: service worker para que funcione sin conexión.
+- `config.js`: URL y clave pública de Supabase (vacío = solo en el dispositivo).
+- `vendor/supabase.js`: cliente de Supabase (v2.119.0) incluido para que funcione sin conexión.
+- `supabase/`: esquema de la base de datos y guía de configuración.
 - `icons/`: iconos de la app.

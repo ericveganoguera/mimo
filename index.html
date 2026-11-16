@@ -128,13 +128,36 @@ button.danger{width:100%;background:transparent;color:var(--red);border:2px soli
 @keyframes pop{from{transform:translateY(-6px);opacity:0}}
 .note{font-size:12px;color:var(--mut);text-align:center;margin-top:14px;line-height:1.5}
 .rules{font-size:13px;color:var(--mut);line-height:1.6;margin:0;padding-left:18px}
+#login{position:fixed;inset:0;z-index:20;background:radial-gradient(circle at 50% 30%,#3a2f86,#120e24 65%);display:flex;align-items:center;justify-content:center;padding:24px}
+#login[hidden]{display:none}
+.login-box{width:100%;max-width:340px;text-align:center}
+.login-box .pet{display:inline-block}
+.login-box .pet svg{width:150px;height:150px}
+.login-box h1{font-size:40px;margin:6px 0 4px;letter-spacing:.5px}
+.login-box p{color:var(--mut);margin:0 0 26px;line-height:1.5}
+button.auth{width:100%;border:0;border-radius:14px;padding:15px;font:inherit;font-size:16px;font-weight:600;margin-top:12px;cursor:pointer}
+button.auth.google{background:#fff;color:#1f1f1f}
+button.auth.apple{background:#000;color:#fff;border:1px solid #3a3a3a}
+button.auth:disabled{opacity:.6}
+.login-err{margin-top:16px;color:var(--red);font-size:14px;line-height:1.4}
+.acct{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px}
+.acct b{display:block;font-size:14px;word-break:break-all}
+.sync{font-size:12px;color:var(--mut)}
+.sync.ok{color:var(--acc)}
+.sync.error{color:var(--red)}
+.btns2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btns2 button{width:100%;padding:12px;border-radius:14px;font:inherit;cursor:pointer}
+.btn-out{background:#3a3370;color:var(--txt);border:0}
 </style>
 </head>
 <body>
 <div id="top"></div>
 <div id="main"></div>
 <nav id="nav"></nav>
+<div id="login" hidden></div>
 
+<script src="config.js"></script>
+<script src="vendor/supabase.js"></script>
 <script>
 /* ---------- configuración ---------- */
 const WATER_GOAL = 2000, GLASS = 250, MAX_GLASSES = 16;
@@ -293,10 +316,13 @@ function update(fn){
   const res = fn(d);
   if (res === false) return;
   let msg = res || '';
+  const td = d.days[todayKey()];
+  if (td) td.u = Date.now();
   d.bestStreak = Math.max(d.bestStreak || 0, streak(d));
   if (checkBoss(d)) msg = '⚔️ ¡Dragón de la Placa derrotado! +' + XP_BOSS + ' XP';
   save(d);
   render(msg);
+  schedulePush();
 }
 function toggle(id){
   const m = BRUSH.find(x => x.id === id);
@@ -330,13 +356,21 @@ function undoGlass(){
     return 'Vaso quitado';
   });
 }
-function rename(v){ update(d => { d.name = (v || '').trim().slice(0,16) || 'Jugador'; }); }
-function resetData(){
+function rename(v){ update(d => { d.name = (v || '').trim().slice(0,16) || 'Jugador'; d.nameU = Date.now(); }); }
+async function resetData(){
   if (!confirmReset) { confirmReset = true; render(); return; }
-  const d = load();
-  save({ name:d.name, days:{}, bossDefeated:{}, bestStreak:0 });
   confirmReset = false;
+  if (cloud && user) {
+    try {
+      const a = await cloud.from('day_logs').delete().eq('user_id', user.id);
+      const b = await cloud.from('boss_wins').delete().eq('user_id', user.id);
+      if (a.error || b.error) throw (a.error || b.error);
+    } catch(e) { render('No se pudo borrar en la nube. Inténtalo con conexión.', true); return; }
+  }
+  const d = load();
+  save({ name:d.name, nameU:d.nameU, nameSyncedU:d.nameSyncedU, uid:d.uid, days:{}, bossDefeated:{}, bestStreak:0, syncedAt:0 });
   render('Progreso borrado');
+  schedulePush();
 }
 function go(id){ tab = id; confirmReset = false; render(); }
 
@@ -531,9 +565,209 @@ function screenProfile(d, c){
       <div class="stat"><span>Jefes derrotados</span><span>${c.bossCount}</span></div>
       <div class="stat"><span>Veces que Mimo bajó de etapa</span><span>${c.sim.drops}</span></div>
     </div>
-    <h2>Datos</h2>
-    <button class="danger" onclick="resetData()">${confirmReset ? 'Pulsa otra vez para borrar todo' : 'Borrar progreso'}</button>
-    <div class="note">Los datos se guardan solo en este dispositivo.</div>`;
+    ${accountSection()}`;
+}
+
+/* ---------- nube: cuentas y sincronización (Supabase) ---------- */
+const CFG = window.MIMO_CONFIG || {};
+const cloud = (CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase)
+  ? window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, {
+      auth: { flowType: 'pkce', persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    })
+  : null;
+let user = null, syncState = cloud ? 'syncing' : 'local', lastPull = 0;
+let pushTimer = null, pushing = false, pushAgain = false;
+
+const SYNC_TEXT = {
+  local:   'Solo en este dispositivo',
+  syncing: 'Sincronizando…',
+  ok:      'Guardado en la nube ✓',
+  error:   'Error al sincronizar, se reintentará',
+  offline: 'Sin conexión, se guardará al volver'
+};
+function setSync(s){
+  syncState = s;
+  const el = document.getElementById('sync');
+  if (el) { el.textContent = SYNC_TEXT[s]; el.className = 'sync ' + s; }
+}
+
+async function boot(){
+  render();
+  if (!cloud) return;
+  const params = new URLSearchParams(location.search);
+  const authError = params.get('error_description');
+  const { data } = await cloud.auth.getSession();
+  if (location.search) history.replaceState(null, '', location.pathname);
+  cloud.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT') { user = null; showLogin(); }
+    else if (event === 'SIGNED_IN' && session && !user) onSignedIn(session.user);
+  });
+  if (data && data.session) onSignedIn(data.session.user);
+  else showLogin(authError ? 'No se pudo iniciar sesión: ' + authError : '');
+}
+
+function showLogin(msg = ''){
+  const prov = CFG.providers || ['google'];
+  const el = document.getElementById('login');
+  el.innerHTML = `<div class="login-box">
+    <div class="pet">${mimoSVG(0, 'normal')}</div>
+    <h1>Mimo</h1>
+    <p>Cuida a Mimo cepillándote los dientes y bebiendo agua.</p>
+    ${prov.includes('google') ? `<button class="auth google" onclick="signIn('google', this)">Continuar con Google</button>` : ''}
+    ${prov.includes('apple') ? `<button class="auth apple" onclick="signIn('apple', this)">Continuar con Apple</button>` : ''}
+    ${msg ? `<div class="login-err">${esc(msg)}</div>` : ''}
+    <div class="note">Tu cuenta solo sirve para guardar tu progreso. Sin contraseñas.</div>
+  </div>`;
+  el.hidden = false;
+}
+function hideLogin(){ document.getElementById('login').hidden = true; }
+
+async function signIn(provider, btn){
+  if (btn) btn.disabled = true;
+  const { error } = await cloud.auth.signInWithOAuth({
+    provider, options: { redirectTo: location.origin + location.pathname }
+  });
+  if (error) showLogin('No se pudo iniciar sesión: ' + error.message);
+}
+async function signOut(){
+  clearTimeout(pushTimer);
+  await pushNow();
+  await cloud.auth.signOut();
+  user = null;
+  save({ name:'Jugador', days:{}, bossDefeated:{}, bestStreak:0 });
+  tab = 'char';
+  render();
+  showLogin();
+}
+
+async function onSignedIn(u){
+  user = u;
+  let d = load();
+  if (d.uid && d.uid !== u.id) d = { name:'Jugador', days:{}, bossDefeated:{}, bestStreak:0 };
+  d.uid = u.id;
+  save(d);
+  hideLogin();
+  render();
+  await pullAndMerge();
+  cloud.from('profiles').update({ last_seen_at: new Date().toISOString() }).eq('id', u.id).then(() => {});
+}
+
+/* Trae lo que hay en la nube y lo mezcla con lo local: gana lo más reciente. */
+async function pullAndMerge(){
+  if (!cloud || !user) return;
+  lastPull = Date.now();
+  setSync('syncing');
+  try {
+    const [p, logs, wins, prog] = await Promise.all([
+      cloud.from('profiles').select('display_name,updated_at').eq('id', user.id).maybeSingle(),
+      cloud.from('day_logs').select('day,am,md,pm,glasses,updated_at').eq('user_id', user.id),
+      cloud.from('boss_wins').select('week_start').eq('user_id', user.id),
+      cloud.from('progress').select('best_streak').eq('user_id', user.id).maybeSingle()
+    ]);
+    for (const r of [p, logs, wins, prog]) if (r.error) throw r.error;
+    const d = load();
+    if (p.data) {
+      const su = Date.parse(p.data.updated_at);
+      if (!d.nameU || d.nameU < su) { d.name = p.data.display_name; d.nameU = su; d.nameSyncedU = su; }
+    }
+    const server = {};
+    for (const r of logs.data || []) server[r.day] = r;
+    for (const k in server) {
+      const r = server[k], su = Date.parse(r.updated_at), loc = d.days[k];
+      if (!loc || (loc.u || 0) <= su) d.days[k] = { am:!!r.am, md:!!r.md, pm:!!r.pm, glasses:r.glasses || [], u:su };
+    }
+    let minDirty = Infinity, maxU = 0;
+    for (const k in d.days) {
+      const r = d.days[k], s = server[k];
+      if (!s || (r.u || 0) > Date.parse(s.updated_at)) { if (!r.u) r.u = Date.now(); minDirty = Math.min(minDirty, r.u); }
+      maxU = Math.max(maxU, r.u || 0);
+    }
+    d.syncedAt = minDirty === Infinity ? maxU : minDirty - 1;
+    for (const w of wins.data || []) d.bossDefeated[w.week_start] = true;
+    if (prog.data) d.bestStreak = Math.max(d.bestStreak || 0, prog.data.best_streak || 0);
+    save(d);
+    render();
+    await pushNow();
+  } catch (e) {
+    console.warn('Mimo sync (bajada):', e);
+    setSync(navigator.onLine ? 'error' : 'offline');
+  }
+}
+
+function schedulePush(){
+  if (!cloud || !user) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(pushNow, 800);
+}
+
+/* Sube los días modificados, el nombre, los jefes y el resumen de progreso. */
+async function pushNow(){
+  if (!cloud || !user) return;
+  if (pushing) { pushAgain = true; return; }
+  if (!navigator.onLine) { setSync('offline'); return; }
+  pushing = true;
+  setSync('syncing');
+  try {
+    const d = load();
+    const since = d.syncedAt || 0;
+    let maxU = since;
+    const rows = Object.keys(d.days).filter(k => (d.days[k].u || 0) > since).map(k => {
+      const r = d.days[k];
+      maxU = Math.max(maxU, r.u);
+      return { user_id:user.id, day:k, am:!!r.am, md:!!r.md, pm:!!r.pm,
+               glasses:(r.glasses || []).slice(0, MAX_GLASSES), updated_at:new Date(r.u).toISOString() };
+    });
+    if (rows.length) {
+      const { error } = await cloud.from('day_logs').upsert(rows, { onConflict:'user_id,day' });
+      if (error) throw error;
+    }
+    if ((d.nameU || 0) > (d.nameSyncedU || 0)) {
+      const { error } = await cloud.from('profiles')
+        .update({ display_name:d.name, updated_at:new Date(d.nameU).toISOString() }).eq('id', user.id);
+      if (error) throw error;
+    }
+    const wins = Object.keys(d.bossDefeated).map(w => ({ user_id:user.id, week_start:w }));
+    if (wins.length) {
+      const { error } = await cloud.from('boss_wins').upsert(wins, { onConflict:'user_id,week_start', ignoreDuplicates:true });
+      if (error) throw error;
+    }
+    const c = build(d);
+    const { error } = await cloud.from('progress').upsert({
+      user_id:user.id, xp:c.xp, level:c.level, stage:c.sim.stage, energy:Math.max(0, Math.min(100, c.sim.energy)),
+      streak:c.st, best_streak:c.best, perfect_days:c.perfect, bosses:c.bossCount,
+      week_start:c.wk, week_xp:weekXP(d, c.wk), updated_at:new Date().toISOString()
+    }, { onConflict:'user_id' });
+    if (error) throw error;
+    const d2 = load();
+    d2.syncedAt = Math.max(d2.syncedAt || 0, maxU);
+    d2.nameSyncedU = Math.max(d2.nameSyncedU || 0, d.nameU || 0);
+    save(d2);
+    setSync('ok');
+  } catch (e) {
+    console.warn('Mimo sync (subida):', e);
+    setSync(navigator.onLine ? 'error' : 'offline');
+  } finally {
+    pushing = false;
+    if (pushAgain) { pushAgain = false; schedulePush(); }
+  }
+}
+
+function accountSection(){
+  const resetBtn = `<button class="danger" onclick="resetData()">${confirmReset ? 'Pulsa otra vez para borrar todo' : 'Borrar progreso'}</button>`;
+  if (!cloud || !user) {
+    return `<h2>Datos</h2>${resetBtn}<div class="note">Los datos se guardan solo en este dispositivo.</div>`;
+  }
+  const provider = (user.app_metadata && user.app_metadata.provider) || '';
+  const pname = { google:'Google', apple:'Apple' }[provider] || provider;
+  return `<h2>Cuenta</h2>
+    <div class="card acct">
+      <div><b>${esc(user.email || 'Cuenta de ' + pname)}</b><span id="sync" class="sync ${syncState}">${SYNC_TEXT[syncState]}</span></div>
+      <span class="mut small">${esc(pname)}</span>
+    </div>
+    <div class="btns2">
+      <button class="btn-out" onclick="signOut()">Cerrar sesión</button>
+      ${resetBtn.replace('class="danger"', 'class="danger" style="padding:12px"')}
+    </div>`;
 }
 
 /* ---------- render ---------- */
@@ -560,9 +794,10 @@ function render(msg = '', warn = false){
     </button>`).join('');
 }
 
-render();
+boot();
 setInterval(() => { if (tab !== 'profile' && !document.querySelector('.toast')) render(); }, 30000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { render(); if (user && Date.now() - lastPull > 60000) pullAndMerge(); } });
+window.addEventListener('online', () => pushNow());
 
 /* ---------- instalable como app (PWA) ---------- */
 if ('serviceWorker' in navigator) {
