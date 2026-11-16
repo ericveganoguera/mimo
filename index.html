@@ -240,7 +240,8 @@ const XP_GLASS = 5, DMG_GLASS = 5;       // por vaso
 const XP_PERFECT = 20, XP_BOSS = 50;
 const STAGE_XP = 150;                    // XP de Mimo para evolucionar
 const ENERGY_DAY_MAX = 40;               // energía que quita un día sin hacer nada
-const ENERGY_UP = 10;                    // energía que devuelve un día perfecto
+const ENERGY_UP = 10;                    // energía que da un día perfecto
+const ENERGY_GOOD = 5;                   // energía que da un día con el 80 % o más
 const ENERGY_WEEKLY = 15;                // energía que quita una misión semanal sin hacer
 const DAY_START = 3;                     // el día termina a las 3:00
 
@@ -443,6 +444,17 @@ function checkBoss(d){
   return false;
 }
 
+/* Cambio de energía al acabar un día según la parte de misiones completada:
+   100 % → +10 · 80 % o más → +5 · 50–80 % → 0 · menos del 50 % → baja hasta −40 (nada hecho). */
+function energyDelta(done, total){
+  if (!total) return 0;
+  const r = done / total;
+  if (r >= 1) return ENERGY_UP;
+  if (r >= 0.8) return ENERGY_GOOD;
+  if (r >= 0.5) return 0;
+  return -Math.round(ENERGY_DAY_MAX * (0.5 - r) / 0.5);
+}
+
 /* Recorre los días desde el primero: Mimo evoluciona con XP y pierde energía
    según la parte de misiones que falte cada día. Si llega a 0, baja de etapa. */
 function simulate(d){
@@ -457,8 +469,7 @@ function simulate(d){
     while (prog >= STAGE_XP && stage < PETS.length-1){ stage++; prog -= STAGE_XP; }
     if (stage === PETS.length-1) prog = Math.min(prog, STAGE_XP);
     if (k < tk){
-      const total = dailyIds(r).length, miss = missingDaily(r);
-      energy += (total > 0 && miss === 0 ? ENERGY_UP : 0) - (total ? Math.round(ENERGY_DAY_MAX * miss / total) : 0);
+      energy += energyDelta(doneDaily(r), dailyIds(r).length);
       if (dt.getDay() === 0) {
         for (const id of weeklyIds(r)) if (!weekDone(d, weekKeyOf(dt), id)) energy -= ENERGY_WEEKLY;
       }
@@ -746,7 +757,7 @@ function openRules(){
       <li>El baño se friega una vez por semana, el día que quieras.</li>
       <li>Avisos (en Perfil → Mis hábitos): 1 hora antes de que acabe un plazo y un recordatorio de lo pendiente a la hora que elijas. Nunca entre las 0:00 y las 7:00.</li>
       <li>El día termina a las 3:00. Lo que no marques a tiempo se pierde.</li>
-      <li>Al acabar el día, Mimo pierde energía según las misiones que falten (hasta ${ENERGY_DAY_MAX}). Un día perfecto le devuelve ${ENERGY_UP}. Una misión semanal sin hacer quita ${ENERGY_WEEKLY}.</li>
+      <li>Energía al acabar el día: todo hecho +${ENERGY_UP}; 80 % o más +${ENERGY_GOOD}; entre el 50 % y el 80 % se queda igual; menos de la mitad baja (hasta −${ENERGY_DAY_MAX} si no haces nada). Una misión semanal sin hacer quita ${ENERGY_WEEKLY}.</li>
       <li>Si la energía llega a 0, Mimo baja una etapa.</li>
     </ul>
     <div class="btns" style="margin-top:14px"><button class="sm pri" onclick="closeModal()">Entendido</button></div>`);
