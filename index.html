@@ -49,13 +49,26 @@ h2:first-child{margin-top:4px}
 #main.fill{display:flex;flex-direction:column;gap:12px}
 #main.fill>*{margin:0;flex:none}
 #main.fill .stage{flex:1 1 auto;min-height:190px;height:auto}
-#main.fill .pet svg{width:min(62vw,30vh,320px);height:min(62vw,30vh,320px)}
+#main.fill .stage .pet svg{width:min(62vw,30vh,320px);height:min(62vw,30vh,320px)}
 #main.fill .mood{margin:0;min-height:0}
 #main.fill .card{padding:18px}
 #main.fill button.big{padding:18px 4px;font-size:15px}
 #main.fill button.big span{font-size:32px}
 #main.fill .glass{height:44px}
 #main.fill button.sm{padding:14px}
+#main.fill>.grow{flex:1 1 auto}
+#main.fill h2{margin:4px 2px -4px}
+.qlist{display:flex;flex-direction:column;gap:10px;min-height:340px}
+.qlist .quest{flex:1 1 0;margin:0;min-height:62px}
+.stage .boss-art{font-size:min(26vh,44vw);margin:0;line-height:1}
+.chart{display:flex;flex-direction:column;min-height:200px}
+.chart .cols{flex:1;height:auto}
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mini{text-align:center;padding:14px 6px;margin:0}
+.mini b{display:block;font-size:24px;margin-bottom:2px}
+.mini span{font-size:12px;color:var(--mut)}
+.stats{display:flex;flex-direction:column;justify-content:space-evenly;padding-top:8px;padding-bottom:8px}
+#main.fill .stat{padding:8px 0}
 @keyframes bob{50%{transform:translateY(-8px)}}
 @media (prefers-reduced-motion:reduce){.pet{animation:none}}
 .mood{text-align:center;color:var(--gold);font-size:14px;margin:4px 0 14px;min-height:20px;line-height:1.4}
@@ -413,7 +426,7 @@ function screenMissions(d, c){
   const w = waterOk(t);
   return `
     <h2>Misiones de hoy · ${c.doneCount} / ${c.total}</h2>
-    ${items}
+    <div class="qlist grow">${items}
     <div class="quest static ${w?'done':''}">
       <span class="qi">💧</span>
       <span class="qt">Beber 2 L de agua<small>${waterMl(t)} / ${WATER_GOAL} ml · un vaso cada ${COOLDOWN_MIN} min</small></span>
@@ -425,7 +438,7 @@ function screenMissions(d, c){
       <span class="qt">Día perfecto<small>Todas las misiones completadas</small></span>
       <span class="rw">+${XP_DAY} XP</span>
       <span class="check">${complete(t)?'✓':''}</span>
-    </div>
+    </div></div>
     <h2>Reglas</h2>
     <div class="card"><ul class="rules">
       <li>Cada cepillado solo se puede marcar dentro de su franja horaria.</li>
@@ -445,7 +458,7 @@ function screenBoss(d, c){
     rows += `<div class="day"><span>${names[i]}</span><div class="dbar"><i style="width:${dmg/DAY_DMG_MAX*100}%"></i></div><span>${dmg}</span></div>`;
   }
   return `
-    <div class="boss-art">${c.bossDown ? '💀' : '🐉'}</div>
+    <div class="stage grow"><span class="tag">Jefe semanal</span><div class="boss-art">${c.bossDown ? '💀' : '🐉'}</div></div>
     <h2 class="c">Dragón de la Placa</h2>
     <div class="bar big"><i style="width:${pct}%;background:var(--red)"></i></div>
     <div class="c mut" style="margin-top:6px">${c.bossDown ? '¡Derrotado esta semana!' : c.hpLeft + ' / ' + BOSS_HP + ' HP'}</div>
@@ -470,9 +483,23 @@ function screenRank(d, c){
     </div>`;
   }).join('');
   const record = Math.max(...weeks.map(w => w.xp));
+  const mon = parseKey(c.wk);
+  let perf = 0, brushes = 0, glasses = 0;
+  for (let i = 0; i < 7; i++){
+    const r = rec(d, keyOf(addDays(mon, i)));
+    if (complete(r)) perf++;
+    brushes += brushDone(r);
+    glasses += glassCount(r);
+  }
   return `
     <h2>XP por semana</h2>
-    <div class="card"><div class="cols">${cols}</div></div>
+    <div class="card grow chart"><div class="cols">${cols}</div></div>
+    <h2>Esta semana</h2>
+    <div class="tri">
+      <div class="card mini"><b>${perf}</b><span>días perfectos</span></div>
+      <div class="card mini"><b>${brushes}/${7*BRUSH.length}</b><span>cepillados</span></div>
+      <div class="card mini"><b>${glasses}</b><span>vasos de agua</span></div>
+    </div>
     <div class="card label"><b>Récord semanal (5 semanas)</b><span>${record} XP</span></div>
     <div class="note">Tu marcador personal. El ranking con amigos necesita un servidor y llegará más adelante.</div>`;
 }
@@ -496,7 +523,7 @@ function screenProfile(d, c){
     <h2>Insignias</h2>
     <div class="card badges">${badges}</div>
     <h2>Estadísticas</h2>
-    <div class="card">
+    <div class="card grow stats">
       <div class="stat"><span>XP total</span><span>${c.xp}</span></div>
       <div class="stat"><span>Racha actual</span><span>${c.st} días</span></div>
       <div class="stat"><span>Mejor racha</span><span>${c.best} días</span></div>
@@ -521,7 +548,7 @@ function render(msg = '', warn = false){
     <span>${c.xp} XP</span>`;
 
   const screens = { char: screenChar, missions: screenMissions, boss: screenBoss, rank: screenRank, profile: screenProfile };
-  main.className = tab === 'char' ? 'fill' : '';
+  main.className = 'fill';
   main.innerHTML = (msg ? `<div class="toast ${warn?'warn':''}">${esc(msg)}</div>` : '') + screens[tab](d, c);
   main.scrollTop = scroll;
   if (msg) setTimeout(() => { const t = document.querySelector('.toast'); if (t) t.remove(); }, 2600);
