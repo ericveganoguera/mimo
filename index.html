@@ -150,6 +150,16 @@ button.auth:disabled{opacity:.6}
 .btn-out{background:#3a3370;color:var(--txt);border:0}
 .statgrid{grid-auto-rows:1fr;align-content:stretch}
 .ask-pet{display:inline-block;animation:none}
+.ask-pet.sad{filter:grayscale(.6) brightness(.85)}
+.sumlist{background:#1d1840;border-radius:14px;padding:4px 12px;margin-top:4px}
+.sumlist div{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #332d5c;font-size:14px}
+.sumlist div:last-child{border:0}
+.sumlist span{color:var(--mut);flex:none}
+.sumlist b{text-align:right;font-weight:600}
+.ev{border-radius:12px;padding:9px 12px;margin:0 0 8px;font-size:14px;line-height:1.4}
+.ev.good{background:#1f4a3a;color:#c9f5df}
+.ev.bad{background:#4a1f2e;color:#ffd0d6}
+.missing{color:var(--gold);margin:10px 2px 0;line-height:1.4}
 .ask-pet svg{width:110px;height:110px}
 .sheet .c h3{margin:6px 0 8px}
 .seg{display:grid;grid-template-columns:1fr 1fr;background:#1b1640;border-radius:14px;padding:4px;gap:4px}
@@ -457,15 +467,14 @@ function energyDelta(done, total){
 
 /* Recorre los días desde el primero: Mimo evoluciona con XP y pierde energía
    según la parte de misiones que falte cada día. Si llega a 0, baja de etapa. */
-function simulate(d){
+function simulate(d, tk = todayKey(), withTkXP = true){
   const keys = Object.keys(d.days).sort();
-  const tk = todayKey();
   let stage = 0, prog = 0, energy = 100, drops = 0, lastDrop = null;
   if (!keys.length) return {stage, prog, energy, drops, lastDrop};
   let dt = parseKey(keys[0]);
   while (keyOf(dt) <= tk){
     const k = keyOf(dt), r = rec(d, k);
-    prog += d.days[k] ? dayXP(r) : 0;
+    prog += (d.days[k] && (k < tk || withTkXP)) ? dayXP(r) : 0;
     while (prog >= STAGE_XP && stage < PETS.length-1){ stage++; prog -= STAGE_XP; }
     if (stage === PETS.length-1) prog = Math.min(prog, STAGE_XP);
     if (k < tk){
@@ -649,6 +658,74 @@ function openSettings(){
     <div id="setErr" class="login-err" style="margin:6px 0 0"></div>
     <div class="btns" style="margin-top:12px"><button class="sm" onclick="closeModal()">Cancelar</button><button class="sm pri" onclick="saveSettings(this)">Guardar</button></div>`);
 }
+/* ---------- resumen del día anterior ---------- */
+function summaryKey(){ return 'mimo-summary-' + (user ? user.id : 'local'); }
+function maybeShowSummary(){
+  const d = load(), tk = todayKey(), yk = keyOf(addDays(logicalNow(), -1));
+  let seen = null;
+  try { seen = localStorage.getItem(summaryKey()); } catch(e) {}
+  if (seen === yk) return;
+  const first = Object.keys(d.days).sort()[0];
+  if (!first || first >= tk) return;                     // empezó hoy: no hay "ayer" que resumir
+  if (document.getElementById('modal').classList.contains('open')) { setTimeout(maybeShowSummary, 3000); return; }
+  try { localStorage.setItem(summaryKey(), yk); } catch(e) {}
+  showSummary(d, yk, tk);
+}
+function showSummary(d, yk, tk){
+  const y = rec(d, yk), ids = dailyIds(y), done = doneDaily(y), total = ids.length;
+  const before = simulate(d, yk, false), after = simulate(d, tk, false);
+  const delta = energyDelta(done, total);
+  const ydt = parseKey(yk), wk = weekKeyOf(ydt), sunday = ydt.getDay() === 0;
+  // racha al acabar ayer
+  let st = 0, dt = ydt;
+  while (d.days[keyOf(dt)] && complete(d.days[keyOf(dt)])) { st++; dt = addDays(dt, -1); }
+  // dragón: daño de la semana hasta ayer
+  const hp = bossHP(d);
+  const dmgUntil = k => weekDays(wk).filter(x => x <= k).reduce((s, x) => s + (d.days[x] ? dayDmg(d.days[x]) : 0), 0);
+  const dmgY = d.days[yk] ? dayDmg(y) : 0, dmgAfter = dmgUntil(yk), dmgBefore = dmgAfter - dmgY;
+  const bossKilledYesterday = dmgBefore < hp && dmgAfter >= hp;
+  const bathMissed = sunday && weeklyIds(y).filter(id => !weekDone(d, wk, id));
+  const missing = ids.filter(id => !isDone(id, y)).map(id => H[id].name.toLowerCase());
+
+  const r = total ? done / total : 0;
+  let mood, title, msg;
+  if (r >= 1)        { mood = 'happy';  title = '¡Día perfecto! 🌟';   msg = 'Mimo está feliz. ¡Sigue así!'; }
+  else if (r >= 0.8) { mood = 'happy';  title = '¡Muy buen día!';      msg = 'Casi perfecto. Hoy puedes completarlo todo.'; }
+  else if (r >= 0.5) { mood = 'normal'; title = 'Día correcto';        msg = 'Mimo está bien, pero hoy puedes hacerlo mejor.'; }
+  else if (done > 0) { mood = 'sad';    title = 'Ayer fue flojo';      msg = 'Mimo te necesita hoy. ¡A por ello!'; }
+  else               { mood = 'sad';    title = 'Ayer no cuidaste a Mimo'; msg = 'Mimo te ha echado de menos. Hoy es un buen día para volver.'; }
+
+  const events = [];
+  if (after.drops > before.drops) events.push(`<div class="ev bad">💔 Mimo se quedó sin energía y volvió a la etapa «${STAGES[after.stage]}».</div>`);
+  else if (after.stage > before.stage) events.push(`<div class="ev good">✨ ¡Mimo ha evolucionado a «${STAGES[after.stage]}»!</div>`);
+  if (bossKilledYesterday) events.push(`<div class="ev good">⚔️ ¡Derrotaste al Dragón de la Placa! +${XP_BOSS} XP</div>`);
+  if (bathMissed && bathMissed.length) events.push(`<div class="ev bad">🛁 La semana acabó sin fregar el baño: −${ENERGY_WEEKLY} de energía.</div>`);
+  if (st >= 2 && r >= 1) events.push(`<div class="ev good">🔥 ¡Llevas ${st} días perfectos seguidos!</div>`);
+
+  const eAfter = clamp(after.energy, 0, 100), eBefore = clamp(before.energy, 0, 100);
+  const eShown = after.drops > before.drops ? `${eBefore} → 0 → ${eAfter}` : `${eBefore} → ${eAfter}`;
+  const sign = n => (n > 0 ? '+' : '') + n;
+  const bossLine = sunday
+    ? (dmgAfter >= hp ? 'Semana terminada: dragón derrotado ✓' : `Semana terminada: el dragón sobrevivió con ${hp - dmgAfter} HP`)
+    : (dmgAfter >= hp ? `${dmgY} de daño · ya está derrotado ✓` : `${dmgY} de daño · le quedan ${hp - dmgAfter} HP`);
+
+  openModal(`<div class="c">
+      <div class="mut small">Resumen de ayer</div>
+      <div class="pet ask-pet ${mood === 'sad' ? 'sad' : ''}">${mimoSVG(after.stage, mood)}</div>
+      <h3>${title}</h3>
+      <p class="mut small">${msg}</p>
+    </div>
+    ${events.join('')}
+    <div class="sumlist">
+      <div><span>✅ Misiones</span><b>${done} de ${total} · +${dayXP(y)} XP</b></div>
+      <div><span>⚡ Energía</span><b>${eShown}${after.drops > before.drops ? '' : ' (' + sign(eAfter - eBefore) + ')'}</b></div>
+      <div><span>🔥 Racha</span><b>${st} ${st === 1 ? 'día' : 'días'}</b></div>
+      <div><span>🐉 Dragón</span><b>${bossLine}</b></div>
+    </div>
+    ${missing.length ? `<p class="small missing">Lo que faltó: ${missing.join(', ')}</p>` : ''}
+    <div class="btns" style="margin-top:12px"><button class="sm pri" onclick="closeModal()">¡A por hoy!</button></div>`);
+}
+
 /* ---------- notificaciones push ---------- */
 function pushSupported(){
   return !!(CFG.vapidPublicKey && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window);
@@ -1125,7 +1202,7 @@ async function boot(){
   const d = load();
   if (ensureToday(d)) save(d);
   render();
-  if (!cloud) return;
+  if (!cloud) { setTimeout(maybeShowSummary, 600); return; }
   const params = new URLSearchParams(location.search);
   const authError = params.get('error_description');
   const joinCode = params.get('join');
@@ -1188,6 +1265,7 @@ async function onSignedIn(u){
   let pendingJoin = null;
   try { pendingJoin = localStorage.getItem('mimo-join'); localStorage.removeItem('mimo-join'); } catch(e) {}
   if (pendingJoin) joinGroup(pendingJoin);
+  maybeShowSummary();
   if (pushSupported() && settingsOf(load()).notify.on && Notification.permission === 'granted') enablePush(true);
   else setTimeout(askNotifications, 1200);
   cloud.from('profiles').update({ last_seen_at: new Date().toISOString() }).eq('id', u.id).then(() => {});
@@ -1354,7 +1432,7 @@ function render(msg = '', warn = false){
 
 boot();
 setInterval(() => { if (tab === 'rank') loadRanking(); if (tab !== 'profile' && !document.querySelector('.toast') && !document.getElementById('modal').classList.contains('open')) render(); }, 30000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { render(); if (user && Date.now() - lastPull > 60000) pullAndMerge(); } });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { render(); if (!cloud || user) setTimeout(maybeShowSummary, 1500); if (user && Date.now() - lastPull > 60000) pullAndMerge(); } });
 window.addEventListener('online', () => pushNow());
 
 /* ---------- instalable como app (PWA) ---------- */
