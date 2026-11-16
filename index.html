@@ -187,7 +187,7 @@ button.auth:disabled{opacity:.6}
 .grid.g2{grid-template-columns:repeat(2,1fr)}
 .tile{background:#2f2956;border:2px solid transparent;border-radius:16px;padding:9px 4px;color:var(--txt);font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;min-height:74px}
 .tile .ti{font-size:26px;line-height:1.15}
-.tile b{font-size:13px}
+.tile b{font-size:13px;line-height:1.2;text-align:center}
 .tile small{font-size:11px;color:var(--mut);white-space:nowrap}
 .tile.done{border-color:var(--acc)}
 .tile.done small{color:var(--acc)}
@@ -244,15 +244,15 @@ const DAY_START = 3;                     // el día termina a las 3:00
 /* Catálogo de hábitos.
    kind: brush/check (marcar, con franja opcional), water, steps, read, weekly */
 const HABITS = [
-  {id:'am',      kind:'brush',  icon:'🪥', name:'Mañana',   full:'Cepillado de la mañana',   from:6,  to:12, xp:10, dmg:10},
-  {id:'md',      kind:'brush',  icon:'☀️', name:'Mediodía', full:'Cepillado del mediodía',   from:14, to:17, xp:10, dmg:10},
-  {id:'pm',      kind:'brush',  icon:'🌙', name:'Noche',    full:'Cepillado de la noche',    from:20, to:27, xp:10, dmg:10},
-  {id:'water',   kind:'water',  icon:'💧', name:'Agua',     full:'Beber 2 L de agua'},
-  {id:'steps',   kind:'steps',  icon:'👟', name:'Pasos',    full:'Caminar',                  xp:20, dmg:20},
-  {id:'read',    kind:'read',   icon:'📖', name:'Leer',     full:'Leer 20 minutos',          xp:20, dmg:20},
-  {id:'bed',     kind:'check',  icon:'🛏️', name:'Cama',     full:'Hacer la cama',            from:5,  to:14, xp:10, dmg:10},
-  {id:'kitchen', kind:'check',  icon:'🍽️', name:'Cocina',   full:'Ordenar cocina y comedor', xp:10, dmg:10},
-  {id:'bath',    kind:'weekly', icon:'🛁', name:'Baño',     full:'Fregar el baño',           xp:30, dmg:30}
+  {id:'am',      kind:'brush',  icon:'🪥', name:'Dientes mañana',   full:'Lavarme los dientes por la mañana', from:6,  to:12, xp:10, dmg:10},
+  {id:'md',      kind:'brush',  icon:'🪥', name:'Dientes mediodía', full:'Lavarme los dientes al mediodía',   from:14, to:17, xp:10, dmg:10},
+  {id:'pm',      kind:'brush',  icon:'🪥', name:'Dientes noche',    full:'Lavarme los dientes por la noche',  from:20, to:27, xp:10, dmg:10},
+  {id:'water',   kind:'water',  icon:'💧', name:'Beber agua',       full:'Beber 2 L de agua'},
+  {id:'steps',   kind:'steps',  icon:'👟', name:'Caminar',          full:'Caminar mis pasos del día',         xp:20, dmg:20},
+  {id:'read',    kind:'check',  icon:'📖', name:'Leer 20 min',      full:'Leer 20 minutos',                   xp:20, dmg:20},
+  {id:'bed',     kind:'check',  icon:'🛏️', name:'Hacer la cama',    full:'Hacer la cama',                     from:5,  to:14, xp:10, dmg:10},
+  {id:'kitchen', kind:'check',  icon:'🍽️', name:'Ordenar cocina',   full:'Ordenar la cocina y el comedor',    xp:10, dmg:10},
+  {id:'bath',    kind:'weekly', icon:'🛁', name:'Fregar baño',      full:'Fregar el baño',                    xp:30, dmg:30}
 ];
 const H = Object.fromEntries(HABITS.map(h => [h.id, h]));
 const GROUPS = [
@@ -621,9 +621,9 @@ function openSettings(){
 function openRules(){
   openModal(`<h3>📜 Reglas</h3>
     <ul class="rules">
-      <li>Los cepillados solo se marcan en su franja: 6–12 h, 14–17 h y 20–3 h. La cama, antes de las 14 h.</li>
+      <li>Lavarse los dientes solo se marca en su franja: mañana 6–12 h, mediodía 14–17 h y noche 20–3 h. La cama, antes de las 14 h.</li>
       <li>Agua: un vaso de 250 ml cada ${COOLDOWN_MIN} min como máximo.</li>
-      <li>Leer: pulsa «Empezar» y confírmalo cuando pasen ${READ_MIN} min.</li>
+      <li>Leer: márcalo cuando hayas leído 20 minutos.</li>
       <li>Pasos: apunta la cifra de la app de salud de tu móvil.</li>
       <li>El baño se friega una vez por semana, el día que quieras.</li>
       <li>El día termina a las 3:00. Lo que no marques a tiempo se pierde.</li>
