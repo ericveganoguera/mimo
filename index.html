@@ -149,6 +149,16 @@ button.auth:disabled{opacity:.6}
 .btns2 button{width:100%;padding:12px;border-radius:14px;font:inherit;cursor:pointer}
 .btn-out{background:#3a3370;color:var(--txt);border:0}
 .statgrid{grid-auto-rows:1fr;align-content:stretch}
+/* Aviso de instalación */
+#install{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:12px 12px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,#000a 30%)}
+#install[hidden]{display:none}
+.inst{max-width:440px;margin:0 auto;background:#2b2560;border:1px solid #4a3f8a;border-radius:20px;padding:16px;box-shadow:0 10px 30px #000a;animation:up .3s ease-out}
+@keyframes up{from{transform:translateY(30px);opacity:0}}
+.inst-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.inst-top img{width:54px;height:54px;border-radius:14px;flex:none}
+.inst-top b{display:block;font-size:16px}
+.inst-top span{font-size:13px;color:var(--mut);line-height:1.4}
+.inst ol{margin:0 0 12px;padding-left:20px;font-size:14px;line-height:1.6;color:var(--txt)}
 .seg{display:grid;grid-template-columns:1fr 1fr;background:#1b1640;border-radius:14px;padding:4px;gap:4px}
 .seg button{border:0;background:none;color:var(--mut);font:inherit;font-size:14px;padding:9px;border-radius:10px;cursor:pointer}
 .seg button.on{background:#3a3370;color:var(--txt);font-weight:600}
@@ -225,6 +235,7 @@ button.setbtn{display:flex;justify-content:space-between;align-items:center;widt
 <nav id="nav"></nav>
 <div id="login" hidden></div>
 <div id="modal" onclick="closeModal()"></div>
+<div id="install" hidden></div>
 
 <script src="config.js"></script>
 <script src="vendor/supabase.js"></script>
@@ -1225,6 +1236,46 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) { re
 window.addEventListener('online', () => pushNow());
 
 /* ---------- instalable como app (PWA) ---------- */
+/* Al entrar desde el navegador del móvil se ofrece instalar Mimo.
+   Android/Chrome: botón que abre el diálogo de instalación del sistema.
+   iPhone/Safari: no existe ese diálogo, así que se explican los pasos. */
+let installEvt = null;
+const INSTALL_KEY = 'mimo-install-dismissed', INSTALL_SNOOZE = 3 * 24 * 3600e3;
+function isStandalone(){
+  return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+}
+function installSnoozed(){
+  try { return Date.now() - Number(localStorage.getItem(INSTALL_KEY) || 0) < INSTALL_SNOOZE; } catch(e) { return false; }
+}
+function showInstall(kind){
+  if (isStandalone() || installSnoozed()) return;
+  const el = document.getElementById('install');
+  const head = `<div class="inst-top"><img src="icons/icon-192.png" alt=""><div><b>Instala Mimo</b><span>Tenlo en tu pantalla de inicio y ábrelo como una app, a pantalla completa y sin conexión.</span></div></div>`;
+  el.innerHTML = kind === 'ios'
+    ? `<div class="inst">${head}<ol><li>Pulsa el botón <b>Compartir</b> de Safari (el cuadrado con la flecha).</li><li>Elige <b>Añadir a pantalla de inicio</b>.</li></ol><div class="btns"><button class="sm pri" onclick="dismissInstall()">Entendido</button></div></div>`
+    : `<div class="inst">${head}<div class="btns"><button class="sm" onclick="dismissInstall()">Ahora no</button><button class="sm pri" onclick="doInstall()">Instalar</button></div></div>`;
+  el.hidden = false;
+}
+function hideInstall(){ document.getElementById('install').hidden = true; }
+function dismissInstall(){
+  try { localStorage.setItem(INSTALL_KEY, String(Date.now())); } catch(e) {}
+  hideInstall();
+}
+async function doInstall(){
+  if (!installEvt) { hideInstall(); return; }
+  installEvt.prompt();
+  const choice = await installEvt.userChoice.catch(() => null);
+  installEvt = null;
+  if (choice && choice.outcome === 'accepted') hideInstall(); else dismissInstall();
+}
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();          // en su lugar mostramos nuestro aviso
+  installEvt = e;
+  showInstall('android');
+});
+window.addEventListener('appinstalled', () => { installEvt = null; hideInstall(); });
+if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !isStandalone()) setTimeout(() => showInstall('ios'), 1500);
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
