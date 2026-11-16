@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mimo</title>
+<meta name="description" content="Cuida a Mimo cepillándote los dientes y bebiendo agua.">
+<meta name="theme-color" content="#15112e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+:root{--card:#262050;--acc:#7dd3a0;--gold:#f5c542;--blue:#6ab4ff;--red:#ef6f6c;--txt:#f4f1ff;--mut:#a59ec9;--nav:#15112e}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(circle at 50% 0%,#2e2766,#120e24 60%);color:var(--txt);overflow:hidden}
+#top{position:fixed;top:0;left:0;right:0;height:calc(56px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 16px 0;display:flex;align-items:center;gap:12px;justify-content:space-between;background:rgba(18,14,36,.88);backdrop-filter:blur(8px);z-index:5;font-size:14px}
+#top .name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40%}
+.xpbar{flex:1;height:8px;background:#0c0920;border-radius:99px;overflow:hidden}
+.xpbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--blue));transition:width .5s}
+#main{position:fixed;top:calc(56px + env(safe-area-inset-top));bottom:calc(72px + env(safe-area-inset-bottom));left:0;right:0;overflow-y:auto;padding:14px 16px 24px}
+nav{position:fixed;bottom:0;left:0;right:0;height:calc(72px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--nav);border-top:1px solid #2c2657;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;z-index:5}
+nav button{background:none;border:0;color:var(--mut);font:inherit;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:8px 0 10px}
+nav button .i{font-size:22px;line-height:1}
+nav button.on{color:var(--txt)}
+nav button.center .disc{width:62px;height:62px;border-radius:50%;background:linear-gradient(160deg,#9b8dff,#4b3fb5);display:grid;place-items:center;font-size:30px;margin-top:-34px;box-shadow:0 6px 18px #0009;border:4px solid var(--nav)}
+nav button.center.on .disc{box-shadow:0 0 0 3px var(--acc),0 6px 18px #0009}
+h2{font-size:15px;margin:18px 2px 8px;color:var(--mut);font-weight:600}
+h2:first-child{margin-top:4px}
+.card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:12px}
+.label{display:flex;justify-content:space-between;align-items:center;font-size:14px;gap:8px}
+.row{display:flex;justify-content:space-between;font-size:13px;color:var(--mut);margin-top:6px;gap:8px}
+.mut{color:var(--mut)}
+.small{font-size:12px}
+.c{text-align:center}
+.bar{height:10px;background:#130f26;border-radius:99px;overflow:hidden;margin-top:8px}
+.bar>i{display:block;height:100%;background:var(--acc);transition:width .4s}
+.bar.big{height:16px}
+.stage{display:grid;place-items:center;height:210px;border-radius:26px;background:radial-gradient(circle at 50% 60%,#4a3ea0,#1d1838 70%);margin-bottom:10px;position:relative}
+.stage .tag{position:absolute;top:12px;left:14px;font-size:12px;color:var(--mut)}
+.pet{line-height:0;animation:bob 2.6s ease-in-out infinite}
+.pet svg{width:160px;height:160px;display:block}
+.disc svg{width:46px;height:46px;display:block}
+.pet.glow{filter:drop-shadow(0 0 18px #f5c542aa)}
+.pet.sad{filter:grayscale(.7) brightness(.8);animation:none;transform:translateY(10px) rotate(-6deg)}
+.pet.sm{animation:none;width:72px}
+.pet.sm svg{width:72px;height:72px}
+@keyframes bob{50%{transform:translateY(-8px)}}
+@media (prefers-reduced-motion:reduce){.pet{animation:none}}
+.mood{text-align:center;color:var(--gold);font-size:14px;margin:4px 0 14px;min-height:20px;line-height:1.4}
+.mood.bad{color:var(--red)}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+button.big{background:#2f2956;color:var(--txt);border:2px solid transparent;border-radius:18px;padding:14px 4px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+button.big span{font-size:28px}
+button.big small{font-size:11px;color:var(--mut);font-weight:400}
+button.big.done{border-color:var(--acc)}
+button.big.done small{color:var(--acc)}
+button.big.open{border-color:var(--gold)}
+button.big.open small{color:var(--gold)}
+button.big.soon{opacity:.55}
+button.big.lost{opacity:.55;border-color:#5a2f46}
+button.big.lost small{color:var(--red)}
+button.big:active,button.sm:active{transform:scale(.98)}
+.water{display:flex;gap:5px;margin:12px 0}
+.glass{flex:1;height:34px;border:2px solid var(--blue);border-radius:0 0 8px 8px;position:relative;overflow:hidden}
+.glass.on::after{content:"";position:absolute;left:0;right:0;bottom:0;height:100%;background:var(--blue);opacity:.85}
+.btns{display:flex;gap:8px}
+button.sm{flex:1;background:#3a3370;color:var(--txt);border:0;border-radius:12px;padding:11px;font:inherit;cursor:pointer}
+button.sm.pri{background:var(--blue);color:#0c1b33;font-weight:600;flex:2}
+button.sm.wait{background:#2b3a55;color:var(--mut);font-weight:400}
+.quest{display:flex;align-items:center;gap:12px;width:100%;background:#2f2956;border:2px solid transparent;color:inherit;border-radius:16px;padding:14px;margin-bottom:10px;font:inherit;text-align:left;cursor:pointer}
+.quest.static{cursor:default}
+.quest.done{border-color:var(--acc)}
+.quest.open{border-color:var(--gold)}
+.quest.soon,.quest.lost{opacity:.6}
+.qi{font-size:26px}
+.qt{flex:1}
+.qt small{display:block;color:var(--mut);font-size:12px;margin-top:2px}
+.quest.lost .qt small{color:var(--red)}
+.rw{font-size:12px;color:var(--gold);white-space:nowrap}
+.check{width:26px;height:26px;border-radius:50%;border:2px solid var(--mut);display:grid;place-items:center;font-size:13px;flex:none}
+.quest.done .check{background:var(--acc);border-color:var(--acc);color:#10231a}
+.quest.lost .check{border-color:var(--red);color:var(--red)}
+.boss-art{font-size:96px;text-align:center;margin:6px 0;animation:bob 3s ease-in-out infinite}
+.day{display:flex;align-items:center;gap:10px;font-size:13px;margin:8px 0}
+.day span:first-child{width:14px;color:var(--mut)}
+.day span:last-child{width:34px;text-align:right}
+.dbar{flex:1;height:10px;background:#130f26;border-radius:99px;overflow:hidden}
+.dbar>i{display:block;height:100%;background:var(--red)}
+.cols{display:flex;align-items:flex-end;gap:10px;height:150px;padding-top:10px}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:12px;color:var(--mut);gap:4px}
+.col .b{width:100%;background:linear-gradient(180deg,var(--acc),#3d7f5f);border-radius:8px 8px 4px 4px;min-height:4px}
+.col.cur .b{background:linear-gradient(180deg,var(--gold),#9a7a1c)}
+.col b{color:var(--txt);font-size:12px}
+.badges span{display:inline-block;border-radius:99px;padding:5px 11px;font-size:12px;margin:3px;background:#3a3370}
+.badges span.off{opacity:.35}
+.stat{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #332d5c;font-size:14px}
+.stat:last-child{border:0}
+.prof{display:flex;align-items:center;gap:14px}
+.prof input{background:#130f26;color:var(--txt);border:1px solid #3a3370;border-radius:10px;padding:8px 10px;font:inherit;font-size:16px;width:100%}
+button.danger{width:100%;background:transparent;color:var(--red);border:2px solid var(--red);border-radius:14px;padding:12px;font:inherit;cursor:pointer}
+.toast{background:var(--gold);color:#2a2100;border-radius:14px;padding:10px 14px;font-size:14px;font-weight:600;text-align:center;margin-bottom:12px;animation:pop .3s ease-out}
+.toast.warn{background:#3a3370;color:var(--txt)}
+@keyframes pop{from{transform:translateY(-6px);opacity:0}}
+.note{font-size:12px;color:var(--mut);text-align:center;margin-top:14px;line-height:1.5}
+.rules{font-size:13px;color:var(--mut);line-height:1.6;margin:0;padding-left:18px}
+</style>
+</head>
+<body>
+<div id="top"></div>
+<div id="main"></div>
+<nav id="nav"></nav>
+
+<script>
+/* ---------- configuración ---------- */
+const WATER_GOAL = 2000, GLASS = 250, MAX_GLASSES = 16;
+const COOLDOWN_MIN = 30;
+const XP_Q = 10, XP_GLASS = 5, XP_DAY = 20, XP_BOSS = 50;
+const DMG_Q = 10, DMG_GLASS = 5, BOSS_HP = 350;
+const STAGE_XP = 150;                  // XP de Mimo para evolucionar
+const ENERGY_DOWN = 10, ENERGY_UP = 10; // por misión fallada / por día perfecto
+const DAY_START = 3;                   // el día termina a las 3:00
+const BRUSH = [
+  {id:'am', icon:'🪥', name:'Mañana',   full:'Cepillado de la mañana',   from:6,  to:12},
+  {id:'md', icon:'☀️', name:'Mediodía', full:'Cepillado del mediodía',   from:14, to:17},
+  {id:'pm', icon:'🌙', name:'Noche',    full:'Cepillado de la noche',    from:20, to:27}
+];
+const GLASSES_GOAL = WATER_GOAL / GLASS;
+const DAY_DMG_MAX = BRUSH.length*DMG_Q + GLASSES_GOAL*DMG_GLASS;
+const STAGES = ['Huevo','Bebé Mimo','Mimo pequeño','Mimo','Mimo alado','Mimo real'];
+const PETS = STAGES;
+
+/* ---------- Mimo (dibujado en SVG) ---------- */
+function mimoSVG(stage, mood){
+  const ink = '#2a2240';
+  const eyes = (ey, dx) => {
+    if (mood === 'happy') return `<path d="M${60-dx-5} ${ey+1} Q${60-dx} ${ey-5} ${60-dx+5} ${ey+1}M${60+dx-5} ${ey+1} Q${60+dx} ${ey-5} ${60+dx+5} ${ey+1}" stroke="${ink}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    let s = `<circle cx="${60-dx}" cy="${ey}" r="4.5" fill="${ink}"/><circle cx="${60+dx}" cy="${ey}" r="4.5" fill="${ink}"/><circle cx="${60-dx+1.5}" cy="${ey-1.5}" r="1.4" fill="#fff"/><circle cx="${60+dx+1.5}" cy="${ey-1.5}" r="1.4" fill="#fff"/>`;
+    if (mood === 'sad') s += `<path d="M${60-dx-6} ${ey-6} L${60-dx+4} ${ey-10}M${60+dx+6} ${ey-6} L${60+dx-4} ${ey-10}" stroke="${ink}" stroke-width="2.5" stroke-linecap="round"/>`;
+    return s;
+  };
+  const mouth = my => {
+    const d = mood === 'happy' ? `M53 ${my} Q60 ${my+8} 67 ${my}` : mood === 'sad' ? `M54 ${my+4} Q60 ${my-2} 66 ${my+4}` : `M55 ${my} Q60 ${my+4} 65 ${my}`;
+    return `<path d="${d}" stroke="${ink}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  };
+  if (stage === 0){
+    return `<svg viewBox="0 0 120 120" aria-hidden="true"><ellipse cx="60" cy="112" rx="26" ry="5" fill="#0003"/><path d="M60 20 C84 20 94 54 94 74 C94 96 79 108 60 108 C41 108 26 96 26 74 C26 54 36 20 60 20Z" fill="#f3eeff"/><circle cx="44" cy="46" r="6" fill="#bfe9df"/><circle cx="78" cy="94" r="6" fill="#bfe9df"/><circle cx="80" cy="50" r="4" fill="#bfe9df"/></svg>`;
+  }
+  const rx = 26 + stage*3, ry = 24 + stage*3, cy = 72, top = cy - ry;
+  const body = '#6fd6c1', dark = '#4fb8a3', belly = '#c8f3ea';
+  let s = `<svg viewBox="0 0 120 120" aria-hidden="true"><ellipse cx="60" cy="${cy+ry+4}" rx="${rx*0.8}" ry="5" fill="#0003"/>`;
+  if (stage >= 4) s += `<ellipse cx="${60-rx-4}" cy="${cy-8}" rx="12" ry="20" fill="#cdbdff" transform="rotate(-25 ${60-rx-4} ${cy-8})"/><ellipse cx="${60+rx+4}" cy="${cy-8}" rx="12" ry="20" fill="#cdbdff" transform="rotate(25 ${60+rx+4} ${cy-8})"/>`;
+  if (stage >= 2) s += `<circle cx="${60-rx*0.6}" cy="${top+6}" r="8" fill="${body}"/><circle cx="${60+rx*0.6}" cy="${top+6}" r="8" fill="${body}"/><circle cx="${60-rx*0.6}" cy="${top+6}" r="4" fill="#ffb3c7"/><circle cx="${60+rx*0.6}" cy="${top+6}" r="4" fill="#ffb3c7"/>`;
+  if (stage <= 3) s += `<path d="M60 ${top+3} q0 -10 9 -14 q-2 11 -9 14" fill="#7dd3a0"/>`;
+  s += `<ellipse cx="48" cy="${cy+ry-2}" rx="9" ry="5" fill="${dark}"/><ellipse cx="72" cy="${cy+ry-2}" rx="9" ry="5" fill="${dark}"/>`;
+  s += `<ellipse cx="60" cy="${cy}" rx="${rx}" ry="${ry}" fill="${body}"/><ellipse cx="60" cy="${cy+ry*0.35}" rx="${rx*0.6}" ry="${ry*0.5}" fill="${belly}"/>`;
+  if (stage >= 3) s += `<ellipse cx="${60-rx+1}" cy="${cy+6}" rx="6" ry="10" fill="${dark}" transform="rotate(20 ${60-rx+1} ${cy+6})"/><ellipse cx="${60+rx-1}" cy="${cy+6}" rx="6" ry="10" fill="${dark}" transform="rotate(-20 ${60+rx-1} ${cy+6})"/>`;
+  if (stage === 5) s += `<path d="M46 ${top+3} L48 ${top-11} L54 ${top-3} L60 ${top-14} L66 ${top-3} L72 ${top-11} L74 ${top+3} Z" fill="#f5c542"/>`;
+  const ey = cy - ry*0.2, dx = rx*0.36;
+  s += eyes(ey, dx);
+  s += `<circle cx="${60-dx-7}" cy="${ey+9}" r="4" fill="#ff9bb5" opacity=".6"/><circle cx="${60+dx+7}" cy="${ey+9}" r="4" fill="#ff9bb5" opacity=".6"/>`;
+  s += mouth(ey + 11);
+  return s + '</svg>';
+}
+const STORE = 'cuidadores-v3';
+const TABS = [
+  {id:'missions', icon:'📜', label:'Misiones'},
+  {id:'boss',     icon:'🐉', label:'Jefe'},
+  {id:'char',     icon:'', label:'Mimo', center:true},
+  {id:'rank',     icon:'🏆', label:'Ranking'},
+  {id:'profile',  icon:'👤', label:'Perfil'}
+];
+let tab = 'char', confirmReset = false, mem = null;
+
+/* ---------- fechas (el día lógico va de 3:00 a 3:00) ---------- */
+function pad(n){ return String(n).padStart(2,'0'); }
+function keyOf(dt){ return dt.getFullYear()+'-'+pad(dt.getMonth()+1)+'-'+pad(dt.getDate()); }
+function parseKey(k){ const [y,m,d]=k.split('-').map(Number); return new Date(y,m-1,d); }
+function addDays(dt,n){ const r=new Date(dt); r.setDate(r.getDate()+n); return r; }
+function logicalNow(){ return new Date(Date.now() - DAY_START*3600e3); }
+function todayKey(){ return keyOf(logicalNow()); }
+function weekKeyOf(dt){ return keyOf(addDays(dt,-((dt.getDay()+6)%7))); }
+function nowHour(){ const n=new Date(); let h=n.getHours()+n.getMinutes()/60; if (h < DAY_START) h += 24; return h; }
+function fmtH(h){ return pad(h%24)+':00'; }
+
+/* ---------- almacenamiento ---------- */
+function load(){
+  try { const s = localStorage.getItem(STORE); if (s) return JSON.parse(s); } catch(e) {}
+  return mem || { name:'Jugador', days:{}, bossDefeated:{}, bestStreak:0 };
+}
+function save(d){
+  mem = d;
+  try { localStorage.setItem(STORE, JSON.stringify(d)); } catch(e) {}
+}
+
+/* ---------- reglas ---------- */
+function rec(d,k){ return d.days[k] || {am:false,md:false,pm:false,glasses:[]}; }
+function today(d){ return d.days[todayKey()] || (d.days[todayKey()] = {am:false,md:false,pm:false,glasses:[]}); }
+function glassCount(r){ return (r.glasses || []).length; }
+function waterMl(r){ return glassCount(r) * GLASS; }
+function waterOk(r){ return waterMl(r) >= WATER_GOAL; }
+function brushDone(r){ return BRUSH.filter(m => r[m.id]).length; }
+function complete(r){ return brushDone(r) === BRUSH.length && waterOk(r); }
+function missing(r){ return (BRUSH.length - brushDone(r)) + (waterOk(r) ? 0 : 1); }
+function dayXP(r){ return brushDone(r)*XP_Q + Math.min(glassCount(r), GLASSES_GOAL)*XP_GLASS + (complete(r)?XP_DAY:0); }
+function dayDmg(r){ return brushDone(r)*DMG_Q + Math.min(glassCount(r), GLASSES_GOAL)*DMG_GLASS; }
+function mState(m, r){
+  if (r[m.id]) return 'done';
+  const h = nowHour();
+  if (h < m.from) return 'soon';
+  if (h >= m.to) return 'lost';
+  return 'open';
+}
+function cooldownLeft(r){
+  const g = r.glasses || [];
+  if (!g.length) return 0;
+  return Math.max(0, g[g.length-1] + COOLDOWN_MIN*60000 - Date.now());
+}
+function totalXP(d){
+  let x = 0;
+  for (const k in d.days) x += dayXP(d.days[k]);
+  return x + Object.keys(d.bossDefeated).length * XP_BOSS;
+}
+function perfectDays(d){ return Object.keys(d.days).filter(k => complete(d.days[k])).length; }
+function streak(d){
+  let dt = logicalNow();
+  if (!complete(rec(d, keyOf(dt)))) dt = addDays(dt,-1);
+  let n = 0;
+  while (complete(rec(d, keyOf(dt)))) { n++; dt = addDays(dt,-1); }
+  return n;
+}
+function weekDmg(d, wk){ let s=0; for (const k in d.days) if (weekKeyOf(parseKey(k))===wk) s += dayDmg(d.days[k]); return s; }
+function weekXP(d, wk){ let s=0; for (const k in d.days) if (weekKeyOf(parseKey(k))===wk) s += dayXP(d.days[k]); return s; }
+function checkBoss(d){
+  const wk = weekKeyOf(logicalNow());
+  if (!d.bossDefeated[wk] && weekDmg(d, wk) >= BOSS_HP) { d.bossDefeated[wk] = true; return true; }
+  return false;
+}
+
+/* Recorre los días desde el primero: Mimo evoluciona con XP
+   y pierde energía por cada misión no hecha. Si llega a 0, baja de etapa. */
+function simulate(d){
+  const keys = Object.keys(d.days).sort();
+  const tk = todayKey();
+  let stage = 0, prog = 0, energy = 100, drops = 0, lastDrop = null;
+  if (!keys.length) return {stage, prog, energy, drops, lastDrop};
+  let dt = parseKey(keys[0]);
+  while (keyOf(dt) <= tk){
+    const k = keyOf(dt), r = rec(d, k);
+    prog += dayXP(r);
+    while (prog >= STAGE_XP && stage < PETS.length-1){ stage++; prog -= STAGE_XP; }
+    if (stage === PETS.length-1) prog = Math.min(prog, STAGE_XP);
+    if (k < tk){
+      const miss = missing(r);
+      energy = Math.min(100, energy + (miss === 0 ? ENERGY_UP : 0) - miss*ENERGY_DOWN);
+      if (energy <= 0){
+        if (stage > 0) stage--;
+        prog = 0; energy = 50; drops++; lastDrop = k;
+      }
+    }
+    dt = addDays(dt, 1);
+  }
+  return {stage, prog, energy, drops, lastDrop};
+}
+
+/* ---------- acciones ---------- */
+function update(fn){
+  const d = load();
+  const res = fn(d);
+  if (res === false) return;
+  let msg = res || '';
+  d.bestStreak = Math.max(d.bestStreak || 0, streak(d));
+  if (checkBoss(d)) msg = '⚔️ ¡Dragón de la Placa derrotado! +' + XP_BOSS + ' XP';
+  save(d);
+  render(msg);
+}
+function toggle(id){
+  const m = BRUSH.find(x => x.id === id);
+  const st = mState(m, rec(load(), todayKey()));
+  if (st === 'soon') { render('⏰ ' + m.full + ' se abre a las ' + fmtH(m.from), true); return; }
+  if (st === 'lost') { render('❌ La franja de ' + m.name.toLowerCase() + ' ya ha pasado', true); return; }
+  update(d => {
+    const t = today(d), was = complete(t);
+    t[id] = !t[id];
+    if (!was && complete(t)) return '🌟 ¡Día perfecto! Mimo brilla de felicidad.';
+    return t[id] ? '✅ ¡Misión completada!' : 'Misión desmarcada';
+  });
+}
+function addGlass(){
+  const left = cooldownLeft(rec(load(), todayKey()));
+  if (left > 0) { render('⏳ Próximo vaso en ' + Math.ceil(left/60000) + ' min', true); return; }
+  update(d => {
+    const t = today(d), was = complete(t);
+    t.glasses = t.glasses || [];
+    if (t.glasses.length >= MAX_GLASSES) return false;
+    t.glasses.push(Date.now());
+    if (!was && complete(t)) return '🌟 ¡Día perfecto! Mimo brilla de felicidad.';
+    return '💧 ¡Glup! Mimo agradece la hidratación.';
+  });
+}
+function undoGlass(){
+  update(d => {
+    const t = today(d);
+    if (!t.glasses || !t.glasses.length) return false;
+    t.glasses.pop();
+    return 'Vaso quitado';
+  });
+}
+function rename(v){ update(d => { d.name = (v || '').trim().slice(0,16) || 'Jugador'; }); }
+function resetData(){
+  if (!confirmReset) { confirmReset = true; render(); return; }
+  const d = load();
+  save({ name:d.name, days:{}, bossDefeated:{}, bestStreak:0 });
+  confirmReset = false;
+  render('Progreso borrado');
+}
+function go(id){ tab = id; confirmReset = false; render(); }
+
+/* ---------- datos derivados ---------- */
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function build(d){
+  const t = rec(d, todayKey());
+  const xp = totalXP(d);
+  const wk = weekKeyOf(logicalNow());
+  const dmg = weekDmg(d, wk);
+  const st = streak(d);
+  const sim = simulate(d);
+  return {
+    t, xp, level: Math.floor(xp/100) + 1, into: xp % 100, wk, dmg,
+    hpLeft: Math.max(0, BOSS_HP - dmg), bossDown: !!d.bossDefeated[wk],
+    st, best: Math.max(d.bestStreak || 0, st),
+    perfect: perfectDays(d), bossCount: Object.keys(d.bossDefeated).length,
+    doneCount: brushDone(t) + (waterOk(t) ? 1 : 0), total: BRUSH.length + 1,
+    sim, pet: mimoSVG(sim.stage, sim.energy < 35 ? 'sad' : (brushDone(t) + (waterOk(t) ? 1 : 0)) === BRUSH.length + 1 ? 'happy' : 'normal'), stageName: STAGES[sim.stage],
+    name: d.name || 'Jugador'
+  };
+}
+
+/* ---------- pantallas ---------- */
+function brushSub(m, s){
+  return {done:'Hecho ✓', open:'Hasta las ' + fmtH(m.to), soon:'Desde las ' + fmtH(m.from), lost:'Perdida'}[s];
+}
+function waterCard(t){
+  const filled = glassCount(t);
+  const glasses = Array.from({length: GLASSES_GOAL}, (_,i) => `<div class="glass ${i<filled?'on':''}"></div>`).join('');
+  const left = cooldownLeft(t);
+  const addBtn = left > 0
+    ? `<button class="sm wait" onclick="addGlass()">⏳ Próximo vaso en ${Math.ceil(left/60000)} min</button>`
+    : `<button class="sm pri" onclick="addGlass()">+ vaso (250 ml)</button>`;
+  return `<div class="card">
+    <div class="label"><b>💧 Agua</b><span>${waterMl(t)} / ${WATER_GOAL} ml</span></div>
+    <div class="water">${glasses}</div>
+    <div class="btns">
+      <button class="sm" onclick="undoGlass()" aria-label="Quitar un vaso">−</button>
+      ${addBtn}
+    </div>
+    <div class="row"><span>Un vaso cada ${COOLDOWN_MIN} min como máximo</span></div>
+  </div>`;
+}
+
+function screenChar(d, c){
+  const t = c.t, s = c.sim;
+  const yesterday = keyOf(addDays(logicalNow(), -1));
+  let mood, bad = false;
+  if (s.lastDrop === yesterday) { mood = 'Ayer Mimo se quedó sin energía y volvió a la etapa «' + c.stageName + '».'; bad = true; }
+  else if (s.energy < 35) { mood = 'Mimo está agotado. Completa las misiones de hoy para que se recupere.'; bad = true; }
+  else if (c.doneCount === c.total) mood = '¡Mimo está radiante!';
+  else if (c.doneCount === 0) mood = 'Mimo te espera. ¡Empieza el día!';
+  else mood = 'Faltan ' + (c.total - c.doneCount) + ' misiones para completar el día.';
+
+  const petCls = s.energy < 35 ? 'sad' : (c.doneCount === c.total ? 'glow' : '');
+  const btns = BRUSH.map(m => {
+    const st = mState(m, t);
+    return `<button class="big ${st}" onclick="toggle('${m.id}')"><span>${m.icon}</span>${m.name}<small>${brushSub(m, st)}</small></button>`;
+  }).join('');
+  const eColor = s.energy < 35 ? 'var(--red)' : s.energy < 65 ? 'var(--gold)' : 'var(--acc)';
+  const evo = c.sim.stage === PETS.length-1 ? 'Etapa máxima' : `${s.prog} / ${STAGE_XP} para evolucionar`;
+  return `
+    <div class="stage"><span class="tag">${c.stageName}</span><div class="pet ${petCls}">${c.pet}</div></div>
+    <div class="mood ${bad?'bad':''}">${mood}</div>
+    <div class="card">
+      <div class="label"><b>⚡ Energía</b><span>${s.energy} / 100</span></div>
+      <div class="bar"><i style="width:${s.energy}%;background:${eColor}"></i></div>
+      <div class="row"><span>✨ ${evo}</span><span>🔥 ${c.st} días</span></div>
+    </div>
+    <div class="row3">${btns}</div>
+    ${waterCard(t)}`;
+}
+
+function screenMissions(d, c){
+  const t = c.t;
+  const items = BRUSH.map(m => {
+    const st = mState(m, t);
+    const desc = fmtH(m.from) + ' – ' + fmtH(m.to) + (st === 'lost' ? ' · Perdida' : st === 'soon' ? ' · Aún no' : '');
+    return `<button class="quest ${st}" onclick="toggle('${m.id}')">
+      <span class="qi">${m.icon}</span>
+      <span class="qt">${m.full}<small>${desc}</small></span>
+      <span class="rw">+${XP_Q} XP</span>
+      <span class="check">${st==='done'?'✓':st==='lost'?'✕':''}</span>
+    </button>`;
+  }).join('');
+  const w = waterOk(t);
+  return `
+    <h2>Misiones de hoy · ${c.doneCount} / ${c.total}</h2>
+    ${items}
+    <div class="quest static ${w?'done':''}">
+      <span class="qi">💧</span>
+      <span class="qt">Beber 2 L de agua<small>${waterMl(t)} / ${WATER_GOAL} ml · un vaso cada ${COOLDOWN_MIN} min</small></span>
+      <span class="rw">+${XP_GLASS}/vaso</span>
+      <span class="check">${w?'✓':''}</span>
+    </div>
+    <div class="quest static ${complete(t)?'done':''}">
+      <span class="qi">🌟</span>
+      <span class="qt">Día perfecto<small>Todas las misiones completadas</small></span>
+      <span class="rw">+${XP_DAY} XP</span>
+      <span class="check">${complete(t)?'✓':''}</span>
+    </div>
+    <h2>Reglas</h2>
+    <div class="card"><ul class="rules">
+      <li>Cada cepillado solo se puede marcar dentro de su franja horaria.</li>
+      <li>El día termina a las 3:00. Lo que no marques a tiempo se pierde.</li>
+      <li>Cada misión que falte al acabar el día quita ${ENERGY_DOWN} de energía a Mimo. Un día perfecto le devuelve ${ENERGY_UP}.</li>
+      <li>Si la energía llega a 0, Mimo baja una etapa.</li>
+    </ul></div>`;
+}
+
+function screenBoss(d, c){
+  const pct = c.bossDown ? 0 : c.hpLeft / BOSS_HP * 100;
+  const names = ['L','M','X','J','V','S','D'];
+  const mon = parseKey(c.wk);
+  let rows = '';
+  for (let i = 0; i < 7; i++){
+    const dmg = dayDmg(rec(d, keyOf(addDays(mon, i))));
+    rows += `<div class="day"><span>${names[i]}</span><div class="dbar"><i style="width:${dmg/DAY_DMG_MAX*100}%"></i></div><span>${dmg}</span></div>`;
+  }
+  return `
+    <div class="boss-art">${c.bossDown ? '💀' : '🐉'}</div>
+    <h2 class="c">Dragón de la Placa</h2>
+    <div class="bar big"><i style="width:${pct}%;background:var(--red)"></i></div>
+    <div class="c mut" style="margin-top:6px">${c.bossDown ? '¡Derrotado esta semana!' : c.hpLeft + ' / ' + BOSS_HP + ' HP'}</div>
+    <h2>Daño esta semana</h2>
+    <div class="card">${rows}</div>
+    <div class="note">Cada cepillado quita ${DMG_Q} HP y cada vaso ${DMG_GLASS}. Cada semana empieza de cero.</div>`;
+}
+
+function screenRank(d, c){
+  const weeks = [];
+  for (let i = 4; i >= 0; i--){
+    const wk = weekKeyOf(addDays(logicalNow(), -7*i));
+    weeks.push({ wk, xp: weekXP(d, wk), cur: i === 0 });
+  }
+  const max = Math.max(1, ...weeks.map(w => w.xp));
+  const cols = weeks.map(w => {
+    const dt = parseKey(w.wk);
+    return `<div class="col ${w.cur?'cur':''}">
+      <b>${w.xp}</b>
+      <div style="flex:1;width:100%;display:flex;align-items:flex-end"><div class="b" style="height:${w.xp/max*100}%"></div></div>
+      <span>${dt.getDate()}/${dt.getMonth()+1}</span>
+    </div>`;
+  }).join('');
+  const record = Math.max(...weeks.map(w => w.xp));
+  return `
+    <h2>XP por semana</h2>
+    <div class="card"><div class="cols">${cols}</div></div>
+    <div class="card label"><b>Récord semanal (5 semanas)</b><span>${record} XP</span></div>
+    <div class="note">Tu marcador personal. El ranking con amigos necesita un servidor y llegará más adelante.</div>`;
+}
+
+function screenProfile(d, c){
+  const badges = [
+    ['🌱','Primer día perfecto', c.perfect >= 1],
+    ['🔥','Racha de 7 días', c.best >= 7],
+    ['💎','Racha de 30 días', c.best >= 30],
+    ['⚔️','Primer jefe vencido', c.bossCount >= 1],
+    ['🪽','Mimo alado', c.sim.stage >= 4]
+  ].map(([i,n,ok]) => `<span class="${ok?'':'off'}">${i} ${n}</span>`).join('');
+  return `
+    <div class="card prof">
+      <div class="pet sm">${c.pet}</div>
+      <div style="flex:1">
+        <input value="${esc(c.name)}" maxlength="16" onchange="rename(this.value)" aria-label="Nombre de jugador">
+        <div class="mut small" style="margin-top:6px">Nivel ${c.level} · ${c.xp} XP · ${c.stageName}</div>
+      </div>
+    </div>
+    <h2>Insignias</h2>
+    <div class="card badges">${badges}</div>
+    <h2>Estadísticas</h2>
+    <div class="card">
+      <div class="stat"><span>XP total</span><span>${c.xp}</span></div>
+      <div class="stat"><span>Racha actual</span><span>${c.st} días</span></div>
+      <div class="stat"><span>Mejor racha</span><span>${c.best} días</span></div>
+      <div class="stat"><span>Días perfectos</span><span>${c.perfect}</span></div>
+      <div class="stat"><span>Jefes derrotados</span><span>${c.bossCount}</span></div>
+      <div class="stat"><span>Veces que Mimo bajó de etapa</span><span>${c.sim.drops}</span></div>
+    </div>
+    <h2>Datos</h2>
+    <button class="danger" onclick="resetData()">${confirmReset ? 'Pulsa otra vez para borrar todo' : 'Borrar progreso'}</button>
+    <div class="note">Los datos se guardan solo en este dispositivo.</div>`;
+}
+
+/* ---------- render ---------- */
+function render(msg = '', warn = false){
+  const main = document.getElementById('main');
+  const scroll = main.scrollTop;
+  const d = load(), c = build(d);
+
+  document.getElementById('top').innerHTML = `
+    <span class="name">Nv ${c.level} · ${esc(c.name)}</span>
+    <div class="xpbar"><i style="width:${c.into}%"></i></div>
+    <span>${c.xp} XP</span>`;
+
+  const screens = { char: screenChar, missions: screenMissions, boss: screenBoss, rank: screenRank, profile: screenProfile };
+  main.innerHTML = (msg ? `<div class="toast ${warn?'warn':''}">${esc(msg)}</div>` : '') + screens[tab](d, c);
+  main.scrollTop = scroll;
+  if (msg) setTimeout(() => { const t = document.querySelector('.toast'); if (t) t.remove(); }, 2600);
+
+  document.getElementById('nav').innerHTML = TABS.map(x => `
+    <button class="${x.center?'center':''} ${x.id===tab?'on':''}" onclick="go('${x.id}')">
+      ${x.center ? `<span class="disc">${c.pet}</span>` : `<span class="i">${x.icon}</span>`}
+      <span class="lbl">${x.label}</span>
+    </button>`).join('');
+}
+
+render();
+setInterval(() => { if (tab !== 'profile' && !document.querySelector('.toast')) render(); }, 30000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+
+/* ---------- instalable como app (PWA) ---------- */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e) {}
+</script>
+</body>
+</html>
