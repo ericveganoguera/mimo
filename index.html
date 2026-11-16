@@ -149,6 +149,9 @@ button.auth:disabled{opacity:.6}
 .btns2 button{width:100%;padding:12px;border-radius:14px;font:inherit;cursor:pointer}
 .btn-out{background:#3a3370;color:var(--txt);border:0}
 .statgrid{grid-auto-rows:1fr;align-content:stretch}
+.ask-pet{display:inline-block;animation:none}
+.ask-pet svg{width:110px;height:110px}
+.sheet .c h3{margin:6px 0 8px}
 .seg{display:grid;grid-template-columns:1fr 1fr;background:#1b1640;border-radius:14px;padding:4px;gap:4px}
 .seg button{border:0;background:none;color:var(--mut);font:inherit;font-size:14px;padding:9px;border-radius:10px;cursor:pointer}
 .seg button.on{background:#3a3370;color:var(--txt);font-weight:600}
@@ -683,6 +686,46 @@ async function disablePush(){
     await sub.unsubscribe();
   } catch (e) { console.warn('Mimo push:', e); }
 }
+/* La primera vez que alguien inicia sesión en un móvil, se le pregunta si quiere avisos.
+   Hace falta que pulse un botón: Chrome solo muestra el permiso tras un toque. */
+function askKey(){ return 'mimo-notify-asked-' + (user ? user.id : ''); }
+function askNotifications(){
+  if (!(cloud && user) || !pushSupported()) return;
+  if (Notification.permission === 'denied' || settingsOf(load()).notify.on) return;
+  try { if (localStorage.getItem(askKey())) return; } catch(e) {}
+  if (document.getElementById('modal').classList.contains('open')) { setTimeout(askNotifications, 3000); return; }
+  openModal(`<div class="c">
+      <div class="pet ask-pet">${mimoSVG(Math.max(1, simulate(load()).stage), 'happy')}</div>
+      <h3>¿Te aviso para que no se te olvide?</h3>
+      <p class="mut small">Mimo te mandará una notificación 1 hora antes de que acabe el plazo de una misión y un recordatorio a las 22:00 con lo que te falte. Nunca entre las 0:00 y las 7:00.</p>
+    </div>
+    <div id="askErr" class="login-err" style="margin:0 0 10px"></div>
+    <div class="btns"><button class="sm" onclick="declineNotifications()">Ahora no</button><button class="sm pri" onclick="acceptNotifications(this)">Sí, avísame</button></div>
+    <p class="mut small c" style="margin:12px 0 0">Puedes cambiarlo cuando quieras en Perfil → Mis hábitos.</p>`);
+}
+function markAsked(){ try { localStorage.setItem(askKey(), String(Date.now())); } catch(e) {} }
+function declineNotifications(){ markAsked(); closeModal(); }
+async function acceptNotifications(btn){
+  btn.disabled = true; btn.textContent = 'Activando…';
+  const r = await enablePush();
+  markAsked();
+  if (r !== true) {
+    document.getElementById('askErr').textContent = r;
+    btn.disabled = false; btn.textContent = 'Reintentar';
+    return;
+  }
+  closeModal();
+  let tz;
+  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e) {}
+  update(d => {
+    const s = settingsOf(d);
+    d.settings = { on: s.on, stepGoal: s.stepGoal, tz: tz || s.tz, notify: Object.assign({}, s.notify, { on: true }) };
+    d.nameU = Date.now();
+    return '🔔 Avisos activados';
+  });
+  testNotification();
+}
+
 async function testNotification(){
   try {
     const reg = await navigator.serviceWorker.ready;
@@ -1135,6 +1178,7 @@ async function onSignedIn(u){
   try { pendingJoin = localStorage.getItem('mimo-join'); localStorage.removeItem('mimo-join'); } catch(e) {}
   if (pendingJoin) joinGroup(pendingJoin);
   if (pushSupported() && settingsOf(load()).notify.on && Notification.permission === 'granted') enablePush(true);
+  else setTimeout(askNotifications, 1200);
   cloud.from('profiles').update({ last_seen_at: new Date().toISOString() }).eq('id', u.id).then(() => {});
 }
 
