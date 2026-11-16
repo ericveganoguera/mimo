@@ -45,6 +45,17 @@ h2:first-child{margin-top:4px}
 .pet.sad{filter:grayscale(.7) brightness(.8);animation:none;transform:translateY(10px) rotate(-6deg)}
 .pet.sm{animation:none;width:72px}
 .pet.sm svg{width:72px;height:72px}
+/* Pantalla de Mimo: ocupa todo el alto disponible sin scroll */
+#main.fill{display:flex;flex-direction:column;gap:12px}
+#main.fill>*{margin:0;flex:none}
+#main.fill .stage{flex:1 1 auto;min-height:190px;height:auto}
+#main.fill .pet svg{width:min(62vw,30vh,320px);height:min(62vw,30vh,320px)}
+#main.fill .mood{margin:0;min-height:0}
+#main.fill .card{padding:18px}
+#main.fill button.big{padding:18px 4px;font-size:15px}
+#main.fill button.big span{font-size:32px}
+#main.fill .glass{height:44px}
+#main.fill button.sm{padding:14px}
 @keyframes bob{50%{transform:translateY(-8px)}}
 @media (prefers-reduced-motion:reduce){.pet{animation:none}}
 .mood{text-align:center;color:var(--gold);font-size:14px;margin:4px 0 14px;min-height:20px;line-height:1.4}
@@ -510,6 +521,7 @@ function render(msg = '', warn = false){
     <span>${c.xp} XP</span>`;
 
   const screens = { char: screenChar, missions: screenMissions, boss: screenBoss, rank: screenRank, profile: screenProfile };
+  main.className = tab === 'char' ? 'fill' : '';
   main.innerHTML = (msg ? `<div class="toast ${warn?'warn':''}">${esc(msg)}</div>` : '') + screens[tab](d, c);
   main.scrollTop = scroll;
   if (msg) setTimeout(() => { const t = document.querySelector('.toast'); if (t) t.remove(); }, 2600);
