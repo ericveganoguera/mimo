@@ -40,6 +40,7 @@ h2:first-child{margin-top:4px}
 .stage{display:grid;place-items:center;height:210px;border-radius:26px;background:radial-gradient(circle at 50% 60%,#4a3ea0,#1d1838 70%);margin-bottom:10px;position:relative}
 .stage .tag{position:absolute;top:12px;left:14px;font-size:12px;color:var(--mut)}
 .stage .tag.r{left:auto;right:14px;color:var(--gold)}
+.meters .label span{white-space:nowrap}
 .hint{font-size:11.5px;color:var(--mut);margin-top:5px;line-height:1.35}
 #main.fill .meters{padding:14px 16px}
 .pet{line-height:0;animation:bob 2.6s ease-in-out infinite}
@@ -482,7 +483,9 @@ function simulate(d, tk = todayKey(), withTkXP = true){
   while (keyOf(dt) <= tk){
     const k = keyOf(dt), r = rec(d, k);
     prog += (d.days[k] && (k < tk || withTkXP)) ? dayXP(r) : 0;
-    while (prog >= STAGE_XP && stage < PETS.length-1){ stage++; prog -= STAGE_XP; }
+    if (k < tk) {   // la evolución solo ocurre al cerrar el día (3:00); el sobrante se conserva
+      while (prog >= STAGE_XP && stage < PETS.length-1){ stage++; prog -= STAGE_XP; }
+    }
     if (stage === PETS.length-1) prog = Math.min(prog, STAGE_XP);
     if (k < tk){
       energy += energyDelta(doneDaily(r), dailyIds(r).length);
@@ -923,7 +926,8 @@ function openRules(){
       <li>Avisos (en Perfil → Mis hábitos): 1 hora antes de que acabe un plazo y un recordatorio de lo pendiente a la hora que elijas. Nunca entre las 0:00 y las 7:00.</li>
       <li>El día termina a las 3:00. Lo que no marques a tiempo se pierde.</li>
       <li>Energía al acabar el día: todo hecho +${ENERGY_UP}; 80 % o más +${ENERGY_GOOD}; entre el 50 % y el 80 % se queda igual; menos de la mitad baja (hasta −${ENERGY_DAY_MAX} si no haces nada). Una misión semanal sin hacer quita ${ENERGY_WEEKLY}.</li>
-      <li>Si la energía llega a 0, Mimo baja una etapa.</li>
+      <li>Mimo evoluciona al acabar el día (a las 3:00) si ha reunido ${STAGE_XP} XP; lo que sobre cuenta para la siguiente etapa.</li>
+      <li>Si la energía llega a 0 al acabar el día, Mimo baja una etapa.</li>
     </ul>
     <div class="btns" style="margin-top:14px"><button class="sm pri" onclick="closeModal()">Entendido</button></div>`);
 }
@@ -1001,6 +1005,7 @@ function screenChar(d, c){
   const eColor = s.energy < 35 ? 'var(--red)' : s.energy < 65 ? 'var(--gold)' : 'var(--acc)';
   const maxStage = c.sim.stage === PETS.length-1;
   const evoPct = maxStage ? 100 : Math.min(100, s.prog / STAGE_XP * 100);
+  const evoReady = !maxStage && s.prog >= STAGE_XP;
   return `
     <div class="stage"><span class="tag">${c.stageName}</span><span class="tag r">🔥 ${c.st} ${c.st === 1 ? 'día' : 'días'}</span><div class="pet ${petCls}">${c.pet}</div></div>
     <div class="mood ${bad?'bad':''}">${mood}</div>
@@ -1008,8 +1013,9 @@ function screenChar(d, c){
       <div class="label"><b>⚡ Energía de Mimo</b><span>${s.energy} / 100</span></div>
       <div class="bar"><i style="width:${Math.max(0, s.energy)}%;background:${eColor}"></i></div>
       <div class="hint">Sube si cumples tus misiones y baja si no. Si llega a 0, Mimo retrocede una etapa.</div>
-      <div class="label" style="margin-top:12px"><b>✨ ${maxStage ? 'Etapa máxima alcanzada' : 'Evoluciona a ' + STAGES[c.sim.stage + 1]}</b><span>${maxStage ? '👑' : s.prog + ' / ' + STAGE_XP + ' XP'}</span></div>
+      <div class="label" style="margin-top:12px"><b>✨ ${maxStage ? 'Etapa máxima alcanzada' : (evoReady ? '¡Evoluciona esta noche!' : 'Evoluciona a ' + STAGES[c.sim.stage + 1])}</b><span>${maxStage ? '👑' : s.prog + ' / ' + STAGE_XP + ' XP'}</span></div>
       <div class="bar"><i style="width:${evoPct}%;background:linear-gradient(90deg,var(--gold),#ffd97a)"></i></div>
+      ${maxStage ? '' : `<div class="hint">${evoReady ? 'A las 3:00 será ' + STAGES[c.sim.stage + 1] + '. Lo que sobre contará para la siguiente.' : 'Mimo evoluciona al acabar el día (a las 3:00) si llega a ' + STAGE_XP + ' XP.'}</div>`}
     </div>
     <div class="grid ${ids.length <= 4 ? 'g2' : ''}">${tiles}</div>`;
 }
