@@ -41,7 +41,7 @@ h2:first-child{margin-top:4px}
 .stage .tag{position:absolute;top:12px;left:14px;font-size:12px;color:var(--mut)}
 .stage .tag.r{left:auto;right:14px;color:var(--gold)}
 .meters .label span{white-space:nowrap}
-.hint{font-size:11.5px;color:var(--mut);margin-top:5px;line-height:1.35}
+.hint{font-size:11.5px;color:var(--mut);margin-top:5px;line-height:1.35;height:2.7em;overflow:hidden}
 #main.fill .meters{padding:14px 16px}
 .pet{line-height:0;animation:bob 2.6s ease-in-out infinite}
 .pet svg{width:160px;height:160px;display:block}
@@ -53,8 +53,9 @@ h2:first-child{margin-top:4px}
 /* Pantalla de Mimo: ocupa todo el alto disponible sin scroll */
 #main.fill{display:flex;flex-direction:column;gap:12px}
 #main.fill>*{margin:0;flex:none}
-#main.fill .stage{flex:1 1 auto;min-height:120px;height:auto}
-#main.fill .stage .pet svg{width:min(62vw,24vh,320px);height:min(62vw,24vh,320px)}
+#main.fill .stage{flex:1 1 0;min-height:110px;height:auto;display:flex;align-items:center;justify-content:center;padding:24px 0 8px}
+#main.fill .stage .pet{height:100%;max-height:300px;aspect-ratio:1/1}
+#main.fill .stage .pet svg{width:100%;height:100%}
 #main.fill .mood{margin:0;min-height:0}
 #main.fill .card{padding:18px}
 #main.fill button.big{padding:18px 4px;font-size:15px}
@@ -76,7 +77,7 @@ h2:first-child{margin-top:4px}
 #main.fill .stat{padding:8px 0}
 @keyframes bob{50%{transform:translateY(-8px)}}
 @media (prefers-reduced-motion:reduce){.pet{animation:none}}
-.mood{text-align:center;color:var(--gold);font-size:14px;margin:4px 0 14px;min-height:20px;line-height:1.4}
+.mood{text-align:center;color:var(--gold);font-size:14px;margin:4px 0 14px;min-height:20px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mood.bad{color:var(--red)}
 .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 button.big{background:#2f2956;color:var(--txt);border:2px solid transparent;border-radius:18px;padding:14px 4px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -128,7 +129,8 @@ button.sm.wait{background:#2b3a55;color:var(--mut);font-weight:400}
 .prof{display:flex;align-items:center;gap:14px}
 .pname{font-size:18px;font-weight:700;line-height:1.25;word-break:break-word}
 button.danger{width:100%;background:transparent;color:var(--red);border:2px solid var(--red);border-radius:14px;padding:12px;font:inherit;cursor:pointer}
-.toast{background:var(--gold);color:#2a2100;border-radius:14px;padding:10px 14px;font-size:14px;font-weight:600;text-align:center;margin-bottom:12px;animation:pop .3s ease-out}
+.toast{position:fixed;top:calc(10px + env(safe-area-inset-top));left:16px;right:16px;z-index:12;pointer-events:none;background:var(--gold);color:#2a2100;border-radius:14px;padding:10px 14px;font-size:14px;font-weight:600;text-align:center;box-shadow:0 8px 24px #0008;animation:pop .3s ease-out}
+#main.fill>.toast{margin:0}
 .toast.warn{background:#3a3370;color:var(--txt)}
 @keyframes pop{from{transform:translateY(-6px);opacity:0}}
 .note{font-size:12px;color:var(--mut);text-align:center;margin-top:14px;line-height:1.5}
@@ -201,11 +203,11 @@ button.auth:disabled{opacity:.6}
 #main.fill .acct{padding:12px 16px}
 .qlist .quest.open{border-color:#5a4fa0}
 /* Cuadrícula de misiones en la pantalla de Mimo */
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:92px;gap:8px}
 .grid.g2{grid-template-columns:repeat(2,1fr)}
-.tile{background:#2f2956;border:2px solid transparent;border-radius:16px;padding:9px 4px;color:var(--txt);font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;min-height:74px}
+.tile{background:#2f2956;border:2px solid transparent;border-radius:16px;padding:9px 4px;color:var(--txt);font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;height:92px;min-height:0;overflow:hidden;padding:6px 4px}
 .tile .ti{font-size:26px;line-height:1.15}
-.tile b{font-size:13px;line-height:1.2;text-align:center}
+.tile b{font-size:13px;line-height:1.15;text-align:center;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .tile small{font-size:11px;color:var(--mut);white-space:nowrap}
 .tile.done{border-color:var(--acc)}
 .tile.done small{color:var(--acc)}
@@ -990,11 +992,11 @@ function screenChar(d, c){
   const t = c.t, s = c.sim;
   const yesterday = keyOf(addDays(logicalNow(), -1));
   let mood, bad = false;
-  if (s.lastDrop === yesterday) { mood = 'Ayer Mimo se quedó sin energía y volvió a la etapa «' + c.stageName + '».'; bad = true; }
-  else if (s.energy < 35) { mood = 'Mimo está agotado. Completa las misiones de hoy para que se recupere.'; bad = true; }
+  if (s.lastDrop === yesterday) { mood = 'Mimo volvió a «' + c.stageName + '». ¡A recuperarlo!'; bad = true; }
+  else if (s.energy < 35) { mood = 'Mimo está agotado. ¡Cuídalo hoy!'; bad = true; }
   else if (c.total && c.doneCount === c.total) mood = '¡Mimo está radiante!';
   else if (c.doneCount === 0) mood = 'Mimo te espera. ¡Empieza el día!';
-  else mood = 'Faltan ' + (c.total - c.doneCount) + ' misiones para completar el día.';
+  else mood = (c.total - c.doneCount === 1 ? 'Falta 1 misión' : 'Faltan ' + (c.total - c.doneCount) + ' misiones') + ' para completar el día.';
 
   const petCls = s.energy < 35 ? 'sad' : (c.total && c.doneCount === c.total ? 'glow' : '');
   const ids = hList(t);
