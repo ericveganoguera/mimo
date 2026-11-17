@@ -253,7 +253,7 @@ button.setbtn{display:flex;justify-content:space-between;align-items:center;widt
 <script>
 /* ---------- configuración ---------- */
 const WATER_GOAL = 2000, GLASS = 250, MAX_GLASSES = 16, GLASSES_GOAL = WATER_GOAL / GLASS;
-const COOLDOWN_MIN = 30;                 // minutos entre vasos de agua
+const COOLDOWN_MIN = 0;                  // minutos entre vasos de agua (0 = sin espera)
 const READ_MIN = 20;                     // minutos de lectura
 const XP_GLASS = 5, DMG_GLASS = 5;       // por vaso
 const XP_PERFECT = 20, XP_BOSS = 50;
@@ -438,7 +438,7 @@ function mState(h, r){
 }
 function cooldownLeft(r){
   const g = r.glasses || [];
-  if (!g.length) return 0;
+  if (!g.length || !COOLDOWN_MIN) return 0;
   return Math.max(0, g[g.length-1] + COOLDOWN_MIN*60000 - Date.now());
 }
 function totalXP(d){
@@ -921,7 +921,7 @@ function openRules(){
   openModal(`<h3>📜 Reglas</h3>
     <ul class="rules">
       <li>Lavarse los dientes solo se marca en su franja: mañana 6–12 h, mediodía 14–17 h y noche 20–3 h.</li>
-      <li>Agua: un vaso de 250 ml cada ${COOLDOWN_MIN} min como máximo.</li>
+      <li>Agua: marca un vaso cada vez que bebas 250 ml; con 8 vasos llegas a los 2 L.</li>
       <li>Leer: márcalo cuando hayas leído 20 minutos.</li>
       <li>Pasos: apunta la cifra de la app de salud de tu móvil.</li>
       <li>El baño se friega una vez por semana, el día que quieras.</li>

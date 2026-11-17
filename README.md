@@ -6,7 +6,7 @@ App de hábitos gamificada: cuida a **Mimo**, tu criatura, cepillándote los die
 
 - **Hábitos** (cada jugador elige cuáles activar en Perfil → Mis hábitos):
   - Cepillado de dientes 3 veces, con franja horaria (6–12 h, 14–17 h, 20–3 h).
-  - Agua: 2 L, un vaso de 250 ml cada 30 minutos como máximo.
+  - Agua: 2 L, en vasos de 250 ml.
   - Pasos: objetivo diario configurable; se apunta la cifra de la app de salud.
   - Leer 20 minutos: se marca con un toque.
   - Hacer la cama y ordenar cocina y comedor (a cualquier hora).
