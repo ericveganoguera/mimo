@@ -131,6 +131,8 @@ button.sm.wait{background:#2b3a55;color:var(--mut);font-weight:400}
 button.danger{width:100%;background:transparent;color:var(--red);border:2px solid var(--red);border-radius:14px;padding:12px;font:inherit;cursor:pointer}
 .toast{position:fixed;top:calc(10px + env(safe-area-inset-top));left:16px;right:16px;z-index:12;pointer-events:none;background:var(--gold);color:#2a2100;border-radius:14px;padding:10px 14px;font-size:14px;font-weight:600;text-align:center;box-shadow:0 8px 24px #0008;animation:pop .3s ease-out}
 #main.fill>.toast{margin:0}
+.toast.act{pointer-events:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:8px 8px 8px 16px}
+.toast.act button{border:0;background:#2a2100;color:var(--gold);font:inherit;font-weight:700;padding:8px 14px;border-radius:10px;cursor:pointer;flex:none}
 .toast.warn{background:#3a3370;color:var(--txt)}
 @keyframes pop{from{transform:translateY(-6px);opacity:0}}
 .note{font-size:12px;color:var(--mut);text-align:center;margin-top:14px;line-height:1.5}
@@ -551,13 +553,15 @@ function toggleWeekly(id){
 function addGlass(){
   const left = cooldownLeft(rec(load(), todayKey()));
   if (left > 0) { render('⏳ Próximo vaso en ' + Math.ceil(left/60000) + ' min', true); return; }
+  if (glassCount(rec(load(), todayKey())) >= GLASSES_GOAL) { render('💧 Ya has bebido los 2 L de hoy ✓', true); return; }
+  toastAction = { label: 'Deshacer', fn: 'undoGlass()' };
   update(d => {
     const t = today(d), was = complete(t);
     t.glasses = t.glasses || [];
-    if (t.glasses.length >= MAX_GLASSES) return false;
+    if (t.glasses.length >= GLASSES_GOAL) return false;
     t.glasses.push(Date.now());
     if (!was && complete(t)) return PERFECT_MSG;
-    return '💧 ¡Glup! Mimo agradece la hidratación.';
+    return '💧 Vaso ' + t.glasses.length + ' de ' + GLASSES_GOAL;
   });
 }
 function undoGlass(){
@@ -565,7 +569,7 @@ function undoGlass(){
     const t = today(d);
     if (!t.glasses || !t.glasses.length) return false;
     t.glasses.pop();
-    return 'Vaso quitado';
+    return 'Vaso quitado · llevas ' + t.glasses.length + ' de ' + GLASSES_GOAL;
   });
 }
 function readAction(){
@@ -1505,9 +1509,10 @@ function accountSection(){
 }
 
 /* ---------- render ---------- */
-let lastToast = { msg:'', warn:false, until:0 };
+let lastToast = { msg:'', warn:false, until:0, action:null };
+let toastAction = null;     // botón opcional del próximo aviso (p. ej. «Deshacer»)
 function render(msg = '', warn = false){
-  if (msg) lastToast = { msg, warn, until: Date.now() + 2600 };
+  if (msg) { lastToast = { msg, warn, action: toastAction, until: Date.now() + (toastAction ? 4500 : 2600) }; toastAction = null; }
   else if (lastToast.until > Date.now()) { msg = lastToast.msg; warn = lastToast.warn; }
   const main = document.getElementById('main');
   const scroll = main.scrollTop;
@@ -1516,7 +1521,8 @@ function render(msg = '', warn = false){
 
   const screens = { char: screenChar, missions: screenMissions, boss: screenBoss, rank: screenRank, profile: screenProfile };
   main.className = 'fill';
-  main.innerHTML = (msg ? `<div class="toast ${warn?'warn':''}">${esc(msg)}</div>` : '') + screens[tab](d, c);
+  const act = msg && lastToast.msg === msg && lastToast.action;
+  main.innerHTML = (msg ? `<div class="toast ${warn?'warn':''} ${act?'act':''}"><span>${esc(msg)}</span>${act ? `<button onclick="lastToast.until=0;${act.fn}">${act.label}</button>` : ''}</div>` : '') + screens[tab](d, c);
   main.scrollTop = scroll;
   if (msg) setTimeout(() => { if (lastToast.until <= Date.now()) { const t = document.querySelector('.toast'); if (t) t.remove(); } }, lastToast.until - Date.now() + 20);
 

@@ -1,6 +1,6 @@
 // Service worker de Mimo: permite instalar la app y abrirla sin conexión.
 // Estrategia: primero red (para recibir actualizaciones), y si no hay conexión, caché.
-const CACHE = 'mimo-v17';
+const CACHE = 'mimo-v18';
 const ASSETS = [
   './',
   './index.html',
